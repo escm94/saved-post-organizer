@@ -1,0 +1,79 @@
+.extension{
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    grid-template-rows: repeat(12, 40px);
+  }
+  #folders{
+    grid-column: 1 / -1;
+    grid-row: span 4;
+    background: lightgrey;
+    padding: 3px 5px 10px 5px;
+    overflow-y: auto;
+  }
+  .folder{
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: inline-block;
+    width: fit-content;
+    padding: 2px 5px 2px 5px;
+    border-radius: 3px;
+    margin-top: 5px;
+    margin-left: 2px;
+    margin-right: 2px;
+    background: yellow;
+  }
+  .folder:hover {
+    background-color: goldenrod;
+  }
+  #posts{
+    grid-column: 1 / -1;
+    background: white;
+    padding: 3px 5px 10px 5px;
+    grid-row: span 7;
+    overflow-y: auto;
+  }
+  .post:hover {
+      display: inline-block;
+  } 
+  a{
+    padding: 2px 5px 2px 5px;
+  }
+  .footer{
+    grid-column: 1 / -1;
+    background: lightgrey;
+    grid-row: span 1;
+  }
+  #lblLastSynced, #lblLogin{
+    padding: 2px 5px 2px 5px;
+    float: left;
+    margin-top: 7px;
+    margin-left: 2px; 
+  }
+  #lastSyncedVal{
+    padding: 2px 5px 2px 5px;
+    margin-top: 7px;
+    float: left;
+  }
+  #btnSync{
+    padding: 2px 5px 2px 5px;
+    float: right;
+    margin-top: 5px;
+    margin-right: 2px; 
+  }
+  #btnSync:focus{
+    outline: none;
+  }
+  .hide{
+    display: none;
+  }
+  .show{
+    display: inline;
+  }
+  .spin {
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% {
+      transform:rotate(360deg);
+    }
+  }

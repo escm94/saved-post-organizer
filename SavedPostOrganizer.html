@@ -1,0 +1,23 @@
+<html>
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="SavedPostOrganizer.css">
+  <script src="SavedPostOrganizer.js" defer> </script>
+</head>
+<body>
+  <div class="extension">
+    <div id="folders"></div>
+    <div id="posts">
+    </div>
+    <div class="footer">
+      <label id="lblLastSynced"><strong>Last synced:</strong></label>
+      <label id="lastSyncedVal"></label>
+      <input type="image" title="Sync" src="images\icons8-refresh-30.png" id="btnSync" alt="Sync" width="21" height="21">
+      <label id='lblLogin' class='hide'>
+        <strong>Error: </strong>Unable to fetch posts while signed out.
+        <a href='https://reddit.com/login' target='_blank'>Sign in.</a>
+      </label>
+    </div>
+  </div>
+</body>
+</html>
