@@ -5,7 +5,7 @@
     "manifest_version": 2,
     "browser_action": {
         "default_popup": "SavedPostOrganizer.html",
-        "default_icon": "images\\icons8-checkmark-26.png"
+        "default_icon": "images/icons8-checkmark-26.png"
       },
       "web_accessible_resources": [
         "SavedPostOrganizer.js",
