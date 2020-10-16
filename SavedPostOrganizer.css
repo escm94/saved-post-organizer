@@ -1,3 +1,6 @@
+body{
+  margin: 0px;
+}
 .extension{
     display: grid;
     grid-template-columns: repeat(10, 40px);
@@ -6,7 +9,7 @@
   #folders{
     grid-column: 1 / -1;
     grid-row: span 4;
-    background: lightgrey;
+    background: #1b1b1d;
     padding: 3px 5px 10px 5px;
     overflow-y: auto;
   }
@@ -20,10 +23,10 @@
     margin-top: 5px;
     margin-left: 2px;
     margin-right: 2px;
-    background: yellow;
+    background: #fe8f74;
   }
   .folder:hover {
-    background-color: goldenrod;
+    background: #3bddc6;
   }
   #posts{
     grid-column: 1 / -1;
@@ -40,7 +43,7 @@
   }
   .footer{
     grid-column: 1 / -1;
-    background: lightgrey;
+    background: #abb1b5;
     grid-row: span 1;
   }
   #lblLastSynced, #lblLogin{
