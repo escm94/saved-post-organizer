@@ -54,7 +54,7 @@ const fetchPosts = async (afterParam) => {
         }
 
         let tempDate = new Date(Date.now());
-        lastSyncedDate = tempDate.toUTCString();
+        lastSyncedDate = tempDate.toString().split(" GMT")[0];
         localStorage.setItem('lastSynced', lastSyncedDate);
         posts.forEach(post => folders.find(folder => folder.folderName === 'All').savedPosts.push(post));
         localStorage.setItem('folders', JSON.stringify(folders));
@@ -112,6 +112,7 @@ const displayAll = () => {
     displayUncategorizedPosts();
 };
 
+//TODO: remove (replace with displayPostsFromFolder and pass in All folder)
 function displayUncategorizedPosts(){
     document.getElementById('posts').innerHTML = "<h2>All</h2>";
     posts.forEach(displayPost);
