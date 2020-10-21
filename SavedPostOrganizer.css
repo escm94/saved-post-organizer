@@ -28,11 +28,18 @@ body{
   .folder:hover {
     background: #3bddc6;
   }
+  #postsHeader {
+    grid-column: 1 / -1;
+    padding: 3px 5px 10px 5px;
+  }
+  #btnPrevious:focus, #btnNext:focus, #btnSync:focus {
+    outline: none;
+  }
   #posts{
     grid-column: 1 / -1;
     background: white;
     padding: 3px 5px 10px 5px;
-    grid-row: span 7;
+    grid-row: span 6;
     overflow-y: auto;
   }
   .post:hover {
