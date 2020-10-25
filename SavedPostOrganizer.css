@@ -3,8 +3,8 @@ body{
 }
 .extension{
     display: grid;
-    grid-template-columns: repeat(10, 40px);
-    grid-template-rows: repeat(12, 40px);
+    grid-template-columns: repeat(10, 45px);
+    grid-template-rows: repeat(12, 45px);
   }
   #folders{
     grid-column: 1 / -1;
@@ -24,21 +24,38 @@ body{
     margin-left: 2px;
     margin-right: 2px;
     background: #fe8f74;
+    font-family: 'Roboto', sans-serif;
   }
   .folder:hover {
     background: #3bddc6;
   }
-  #postsHeader {
-    grid-column: 1 / -1;
-    padding: 3px 5px 10px 5px;
+  #lblFolderName{
+    font-family: 'Roboto', sans-serif;
+    display: inline;
+    padding-bottom: 25px;
+    padding-left: 10px;
+    grid-column: 1 / span 7;
   }
-  #btnPrevious:focus, #btnNext:focus, #btnSync:focus {
-    outline: none;
+  #lblPages {
+    font-family: 'Roboto', sans-serif;
+    grid-column: 8 / span 2;
+    padding-top: 20px;
+    text-align: right;
+  }
+  #nextPrevContainer{
+    grid-column: 10 / span 1;
+  }
+  #btnPrevious {
+    padding-top: 18px;
+    padding-left: 3px;
+  }
+  #btnNext {
+    padding-top: 18px;
   }
   #posts{
     grid-column: 1 / -1;
     background: white;
-    padding: 3px 5px 10px 5px;
+    padding: 3px 25px 10px 25px;
     grid-row: span 6;
     overflow-y: auto;
   }
@@ -46,7 +63,11 @@ body{
       display: inline-block;
   } 
   a{
-    padding: 2px 5px 2px 5px;
+    font-family: 'Roboto', sans-serif;
+    padding-left: 8px;
+    padding-right: 8px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
   .footer{
     grid-column: 1 / -1;
@@ -58,11 +79,13 @@ body{
     float: left;
     margin-top: 7px;
     margin-left: 2px; 
+    font-family: 'Roboto', sans-serif;
   }
   #lastSyncedVal{
     padding: 2px 5px 2px 5px;
     margin-top: 7px;
     float: left;
+    font-family: 'Roboto', sans-serif;
   }
   #btnSync{
     padding: 2px 5px 2px 5px;
@@ -70,7 +93,7 @@ body{
     margin-top: 5px;
     margin-right: 2px; 
   }
-  #btnSync:focus{
+  #btnPrevious:focus, #btnNext:focus, #btnSync:focus {
     outline: none;
   }
   .hide{

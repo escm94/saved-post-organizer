@@ -140,12 +140,15 @@ function displayPostsFromFolder(folderName, pageHigh){
     let pageLow = (totalPosts < 25) ? 1 : pageHigh - 24;
     pageHigh = (pageHigh <= totalPosts) ? pageHigh : totalPosts;
     
-    document.getElementById('lblPageLow').innerHTML = pageLow + '-';
-    document.getElementById('lblPageHigh').innerHTML = pageHigh + ' of ';
-    document.getElementById('lblTotalPosts').innerHTML = totalPosts;
-    document.getElementById('lblFolderName').innerHTML = folderName;
+    let lblFolderName = document.getElementById('lblFolderName');
+    lblFolderName.innerHTML = folderName;
     lblFolderName.className = 'show';
-    document.getElementById('posts').innerHTML = '';
+    document.getElementById('lblPages').innerHTML = pageLow + '-' + pageHigh + ' of ' + totalPosts;
+
+    let postsElement = document.getElementById('posts');
+    while (postsElement.firstChild) {
+        postsElement.removeChild(postsElement.lastChild);
+    }
     
     let postsOnPage = folders.find(flder => flder.folderName === folderName).savedPosts.slice(pageLow - 1, pageHigh);
     postsOnPage.forEach(displayPost);
@@ -153,13 +156,15 @@ function displayPostsFromFolder(folderName, pageHigh){
     document.getElementById('btnPrevious').disabled = (pageLow > 1) ? false : true;
     document.getElementById('btnNext').disabled = (pageHigh < totalPosts) ? false : true;
 
-    document.getElementById('btnPrevious').addEventListener('click', function(){
+    document.getElementById('btnPrevious').addEventListener('click', function btnPreviousOnClick() {
         pageHigh = (pageHigh == totalPosts) ? pageLow - 1 : pageHigh - 25;
         displayPostsFromFolder(folderName, pageHigh);
+        document.getElementById('btnPrevious').removeEventListener('click', btnPreviousOnClick);
     });
-    document.getElementById('btnNext').addEventListener('click', function(){
+    document.getElementById('btnNext').addEventListener('click', function btnNextOnClick(){
         pageHigh = pageHigh + 25;
         displayPostsFromFolder(folderName, pageHigh);
+        document.getElementById('btnNext').removeEventListener('click', btnNextOnClick);
     });
 }
 
@@ -184,39 +189,3 @@ function displayPost(savedPost){
 }
 
 document.getElementById('btnSync').addEventListener('click', handleSync);
-
-let btnPrevious = document.createElement('input');
-btnPrevious.id = 'btnPrevious';
-btnPrevious.type = 'image';
-btnPrevious.src = 'images\\icons8-chevron-left-26.png';
-btnPrevious.height = 15;
-btnPrevious.height = 15;
-btnPrevious.disabled = true;
-
-let btnNext = document.createElement('input');
-btnNext.id = 'btnNext';
-btnNext.type = 'image';
-btnNext.src = 'images\\icons8-chevron-right-26.png'
-btnNext.height = 15;
-btnNext.height = 15;
-btnNext.disabled = true;
-
-let lblFolderName = document.createElement('h2');
-lblFolderName.id = 'lblFolderName';
-lblFolderName.className = 'hide';
-
-let lblPageLow = document.createElement('label');
-lblPageLow.id = 'lblPageLow';
-
-let lblPageHigh = document.createElement('label');
-lblPageHigh.id = 'lblPageHigh';
-
-let lblTotalPosts = document.createElement('label');
-lblTotalPosts.id = 'lblTotalPosts';
-
-document.getElementById('postsHeader').appendChild(lblFolderName);
-document.getElementById('postsHeader').appendChild(lblPageLow);
-document.getElementById('postsHeader').appendChild(lblPageHigh);
-document.getElementById('postsHeader').appendChild(lblTotalPosts);
-document.getElementById('postsHeader').appendChild(btnPrevious);
-document.getElementById('postsHeader').appendChild(btnNext);

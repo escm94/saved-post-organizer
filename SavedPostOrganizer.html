@@ -1,13 +1,19 @@
 <html>
 <head>
   <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="SavedPostOrganizer.css">
+  <link href="SavedPostOrganizer.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <script src="SavedPostOrganizer.js" defer> </script>
 </head>
 <body>
   <div class="extension">
     <div id="folders"></div>
-    <div id="postsHeader"></div>
+    <h2 id="lblFolderName" class="hide"></h2>
+    <label id="lblPages"></label>
+    <div id='nextPrevContainer'>
+      <input type="image" title="Previous" src="images\icons8-chevron-left-26.png" id="btnPrevious" alt="Previous" width="15" height="15" disabled="true">
+      <input type="image" title="Next" src="images\icons8-chevron-right-26.png" id="btnNext" alt="Next" width="15" height="15" disabled="true">
+    </div>
     <div id="posts"></div>
     <div class="footer">
       <label id="lblLastSynced"><strong>Last synced:</strong></label>
