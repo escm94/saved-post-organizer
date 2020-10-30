@@ -168,8 +168,14 @@ function displayFolder(folder) {
 
 function displayPostsFromFolder(folderName, pageHigh){
     let totalPosts = folders.find(folder => folder.folderName === folderName).savedPosts.length;
-    let pageLow = (totalPosts < 25) ? 1 : pageHigh - 24;
+    let pageLow;
     pageHigh = (pageHigh <= totalPosts) ? pageHigh : totalPosts;
+    if (totalPosts < 1) {
+        pageLow = 0;
+    }   
+    else {
+        pageLow = (totalPosts < 25) ? 1 : pageHigh - 24;
+    } 
         
     let lblFolderName = document.getElementById('lblFolderName');
     lblFolderName.innerHTML = folderName;
