@@ -7,6 +7,12 @@ let folders = [];
 let posts = [];
 let lastSyncedDate;
 
+//! potentially temporary. currently need these for the btnPrevious and btnNext event listeners
+let currentFolderName;
+let currentPageLow;
+let currentPageHigh;
+let currentTotalPosts;
+
 const handleSync = e => {        
     folders = [];
     posts = [];
@@ -32,9 +38,18 @@ window.onload = (event) => {
     }
 
     let pageHigh = (posts.length > 25) ? 25 : posts.length;
-    document.getElementById('lastSyncedVal').innerHTML = localStorage.getItem('lastSynced');
+    
     folders.forEach(displayFolder);
+    
+    document.getElementById('btnPrevious').disabled = false;
+    document.getElementById('btnNext').disabled = false;  
+    document.getElementById('btnPrevious').setAttribute('hasEventHandler', 'false');
+    document.getElementById('btnNext').setAttribute('hasEventHandler', 'false');
+    document.getElementById('btnPrevious').disabled = true;
+    document.getElementById('btnNext').disabled = true;  
+    
     displayPostsFromFolder('All', pageHigh);
+    document.getElementById('lastSyncedVal').innerHTML = localStorage.getItem('lastSynced');
 };
 
 const fetchPosts = async (afterParam) => {
@@ -130,6 +145,22 @@ function displayFolder(folder) {
         btnFolder.innerHTML = folder.folderName + "(" + folder.savedPosts.length + ")";
     }
     btnFolder.addEventListener('click', function(){
+
+        document.getElementById('btnPrevious').disabled = false;
+        document.getElementById('btnNext').disabled = false;
+
+        if (document.getElementById('btnPrevious').getAttribute('hasEventHandler') === 'true') {
+            document.getElementById('btnPrevious').removeEventListener('click', btnPreviousOnClick);
+            document.getElementById('btnPrevious').setAttribute('hasEventHandler', 'false');
+        }
+        if (document.getElementById('btnNext').getAttribute('hasEventHandler') === 'true') {
+            document.getElementById('btnNext').removeEventListener('click', btnNextOnClick);
+            document.getElementById('btnNext').setAttribute('hasEventHandler', 'false');
+        }
+
+        document.getElementById('btnPrevious').disabled = true;
+        document.getElementById('btnNext').disabled = true;
+        
         displayPostsFromFolder(btnFolder.id, pageHigh);
     });
     document.getElementById('folders').appendChild(btnFolder);    
@@ -139,34 +170,54 @@ function displayPostsFromFolder(folderName, pageHigh){
     let totalPosts = folders.find(folder => folder.folderName === folderName).savedPosts.length;
     let pageLow = (totalPosts < 25) ? 1 : pageHigh - 24;
     pageHigh = (pageHigh <= totalPosts) ? pageHigh : totalPosts;
-    
+        
     let lblFolderName = document.getElementById('lblFolderName');
     lblFolderName.innerHTML = folderName;
     lblFolderName.className = 'show';
     document.getElementById('lblPages').innerHTML = pageLow + '-' + pageHigh + ' of ' + totalPosts;
 
-    let postsElement = document.getElementById('posts');
-    while (postsElement.firstChild) {
-        postsElement.removeChild(postsElement.lastChild);
-    }
+    document.getElementById('posts').innerHTML = '';
     
-    let postsOnPage = folders.find(flder => flder.folderName === folderName).savedPosts.slice(pageLow - 1, pageHigh);
+    let postsOnPage = folders.find(folder => folder.folderName === folderName).savedPosts.slice(pageLow - 1, pageHigh);
     postsOnPage.forEach(displayPost);
     
     document.getElementById('btnPrevious').disabled = (pageLow > 1) ? false : true;
     document.getElementById('btnNext').disabled = (pageHigh < totalPosts) ? false : true;
 
-    document.getElementById('btnPrevious').addEventListener('click', function btnPreviousOnClick() {
-        pageHigh = (pageHigh == totalPosts) ? pageLow - 1 : pageHigh - 25;
-        displayPostsFromFolder(folderName, pageHigh);
+    if (document.getElementById('btnPrevious').getAttribute('hasEventHandler') === 'true') {
         document.getElementById('btnPrevious').removeEventListener('click', btnPreviousOnClick);
-    });
-    document.getElementById('btnNext').addEventListener('click', function btnNextOnClick(){
-        pageHigh = pageHigh + 25;
-        displayPostsFromFolder(folderName, pageHigh);
+        document.getElementById('btnPrevious').setAttribute('hasEventHandler', 'false');
+    }
+    if (document.getElementById('btnNext').getAttribute('hasEventHandler') === 'true') {
         document.getElementById('btnNext').removeEventListener('click', btnNextOnClick);
-    });
+        document.getElementById('btnNext').setAttribute('hasEventHandler', 'false');
+    }
+    
+    //! remove local variable usage for pageLow and totalPosts.
+    currentFolderName = folderName;
+    currentPageLow = pageLow;
+    currentPageHigh = pageHigh;
+    currentTotalPosts = totalPosts;
+
+    if (document.getElementById('btnPrevious').disabled == false && document.getElementById('btnPrevious').getAttribute('hasEventHandler') == 'false') {
+        document.getElementById('btnPrevious').addEventListener('click', btnPreviousOnClick);
+    }
+    if (document.getElementById('btnNext').disabled == false && document.getElementById('btnNext').getAttribute('hasEventHandler') == 'false') {
+        document.getElementById('btnNext').addEventListener('click', btnNextOnClick);
+    } 
 }
+
+const btnPreviousOnClick = () => {
+    currentPageHigh = (currentPageHigh == currentTotalPosts) ? currentPageLow - 1 : currentPageHigh - 25;
+    document.getElementById('btnPrevious').setAttribute('hasEventHandler', 'true');
+    displayPostsFromFolder(currentFolderName, currentPageHigh);
+};
+
+const btnNextOnClick = () => {
+    currentPageHigh = currentPageHigh + 25;
+    document.getElementById('btnNext').setAttribute('hasEventHandler', 'true');
+    displayPostsFromFolder(currentFolderName, currentPageHigh);
+};
 
 function displayPost(savedPost){
     const post = document.createElement('div');
