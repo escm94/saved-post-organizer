@@ -2,12 +2,12 @@ const postsPerRequest = 100;
 const maxPostsToFetch = 1000;
 const maxRequests = maxPostsToFetch / postsPerRequest;
 
-const responses = [];
+let responses = [];
 let folders = [];
 let posts = [];
 let lastSyncedDate;
 
-//! potentially temporary. currently need these for the btnPrevious and btnNext event listeners
+//TODO: potentially temporary. currently need these for the btnPrevious and btnNext event listeners. if not temporary, remove all redundant local vars
 let currentFolderName;
 let currentPageLow;
 let currentPageHigh;
@@ -16,12 +16,20 @@ let currentTotalPosts;
 const handleSync = e => {        
     folders = [];
     posts = [];
-    const newFolder = {
+    responses = [];
+
+    currentFolderName = '';
+    currentPageLow = 0;
+    currentPageHigh = 0;
+    currentTotalPosts = 0;
+
+    const allFolder = {
         folderName: 'All',
         savedPosts: [],
         defaultFolder: true
     };
-    folders.push(newFolder);
+    folders.push(allFolder);
+    
     fetchPosts();
 }
 
@@ -38,9 +46,9 @@ window.onload = (event) => {
     }
 
     let pageHigh = (posts.length > 25) ? 25 : posts.length;
-    
+
     folders.forEach(displayFolder);
-    
+
     document.getElementById('btnPrevious').disabled = false;
     document.getElementById('btnNext').disabled = false;  
     document.getElementById('btnPrevious').setAttribute('hasEventHandler', 'false');
@@ -77,6 +85,7 @@ const fetchPosts = async (afterParam) => {
         localStorage.setItem('folders', JSON.stringify(folders));
         localStorage.setItem('posts', JSON.stringify(posts));
         displayAll();
+        
         document.getElementById('btnSync').classList.remove("spin");
     } catch (error) {
         document.getElementById('btnSync').classList.remove("spin");
@@ -101,6 +110,7 @@ function processPost(savedItem) {
         id: savedItem.data.name
     };
 
+    //post is a comment and not a post, so url won't work
     if (savedItem.data.name.substring(0, 3) === 't1_') {
         savedPost.link = 'https://reddit.com' + savedItem.data.permalink;
         savedPost.title = savedItem.data.link_title;
@@ -126,6 +136,7 @@ function processPost(savedItem) {
 const displayAll = () => {
     let pageHigh = (posts.length > 25) ? 25 : posts.length;
     document.getElementById('lastSyncedVal').innerHTML = localStorage.getItem('lastSynced');
+    document.getElementById('folders').innerHTML = '';
     folders.forEach(displayFolder);
     displayPostsFromFolder('All', pageHigh);
 };
@@ -144,7 +155,8 @@ function displayFolder(folder) {
     else {
         btnFolder.innerHTML = folder.folderName + "(" + folder.savedPosts.length + ")";
     }
-    btnFolder.addEventListener('click', function(){
+    btnFolder.addEventListener('click', function(){        
+        currentPageLow = 1;
 
         document.getElementById('btnPrevious').disabled = false;
         document.getElementById('btnNext').disabled = false;
@@ -166,16 +178,22 @@ function displayFolder(folder) {
     document.getElementById('folders').appendChild(btnFolder);    
 }
 
+//TODO: remove redundant local/global var logic, probably...eventually
 function displayPostsFromFolder(folderName, pageHigh){
     let totalPosts = folders.find(folder => folder.folderName === folderName).savedPosts.length;
     let pageLow;
     pageHigh = (pageHigh <= totalPosts) ? pageHigh : totalPosts;
+
+    //TODO: yeah we gotta clean this up - move somewhere else, something
     if (totalPosts < 1) {
         pageLow = 0;
     }   
-    else {
-        pageLow = (totalPosts < 25) ? 1 : pageHigh - 24;
+    else if (totalPosts < 25 || currentPageLow < 1) {
+        pageLow = 1;
     } 
+    else {
+       pageLow = (currentPageLow == undefined) ? 1 : currentPageLow; 
+    }
         
     let lblFolderName = document.getElementById('lblFolderName');
     lblFolderName.innerHTML = folderName;
@@ -199,7 +217,6 @@ function displayPostsFromFolder(folderName, pageHigh){
         document.getElementById('btnNext').setAttribute('hasEventHandler', 'false');
     }
     
-    //! remove local variable usage for pageLow and totalPosts.
     currentFolderName = folderName;
     currentPageLow = pageLow;
     currentPageHigh = pageHigh;
@@ -213,13 +230,16 @@ function displayPostsFromFolder(folderName, pageHigh){
     } 
 }
 
+//TODO: clean this up so we don't have to ugly up displayPostsFromFolder
 const btnPreviousOnClick = () => {
     currentPageHigh = (currentPageHigh == currentTotalPosts) ? currentPageLow - 1 : currentPageHigh - 25;
+    currentPageLow = currentPageLow - 25;
     document.getElementById('btnPrevious').setAttribute('hasEventHandler', 'true');
     displayPostsFromFolder(currentFolderName, currentPageHigh);
 };
 
 const btnNextOnClick = () => {
+    currentPageLow = currentPageHigh + 1;
     currentPageHigh = currentPageHigh + 25;
     document.getElementById('btnNext').setAttribute('hasEventHandler', 'true');
     displayPostsFromFolder(currentFolderName, currentPageHigh);
