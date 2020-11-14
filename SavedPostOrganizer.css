@@ -26,6 +26,9 @@ body{
     background: #fe8f74;
     font-family: 'Roboto', sans-serif;
   }
+  #All{
+    font-weight: bold;
+  }
   .folder:hover {
     background: #3bddc6;
   }
