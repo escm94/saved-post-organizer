@@ -64,7 +64,8 @@ const fetchPosts = async (afterParam) => {
         const lastSyncedDate = tempDate.toString().split(" GMT")[0];
 
         localStorage.setItem('lastSynced', lastSyncedDate);
-        posts.forEach(post => folders.find(folder => folder.folderName === 'All').savedPosts.push(post));
+        let allFolder = folders.find(folder => folder.folderName == 'All');
+        posts.forEach(post => allFolder.savedPosts.push(post));
         localStorage.setItem('folders', JSON.stringify(folders));
         localStorage.setItem('posts', JSON.stringify(posts));
         displayAll();
@@ -154,7 +155,8 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
     const postsOnPage = folder.savedPosts.slice(currentPageLow - 1, currentPageHigh);
     postsOnPage.forEach(displayPost);
     document.getElementById('lblPages').innerHTML = currentPageLow + '-' + currentPageHigh + ' of ' + totalPosts;
-
+    document.getElementById('posts').scrollTop = 0;
+    
     document.getElementById('btnPrevious').disabled = (currentPageLow > 1) ? false : true;
     document.getElementById('btnNext').disabled = (currentPageHigh < totalPosts) ? false : true;
     configurePrevNextBtns(document.getElementById('btnPrevious').disabled, document.getElementById('btnNext').disabled);
