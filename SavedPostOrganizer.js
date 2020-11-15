@@ -123,6 +123,7 @@ const displayAll = () => {
     document.getElementById('folders').innerHTML = '';
 
     folders.forEach(displayFolder);
+    document.getElementById('folders').scrollTop = 0;
     displayPostsFromFolder(folders.find(folder => folder.folderName == 'All'), pageHigh);
 };
 
@@ -153,8 +154,8 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
 
     document.getElementById('posts').innerHTML = '';
     const postsOnPage = folder.savedPosts.slice(currentPageLow - 1, currentPageHigh);
-    postsOnPage.forEach(displayPost);
     document.getElementById('lblPages').innerHTML = currentPageLow + '-' + currentPageHigh + ' of ' + totalPosts;
+    postsOnPage.forEach(displayPost);
     document.getElementById('posts').scrollTop = 0;
     
     document.getElementById('btnPrevious').disabled = (currentPageLow > 1) ? false : true;
