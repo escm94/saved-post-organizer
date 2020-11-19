@@ -73,28 +73,35 @@ body{
     -webkit-box-decoration-break: clone;
   }
   .footer{
+    display: grid;
     grid-column: 1 / -1;
+    grid-template-columns: repeat(10, 45px);
+    grid-template-rows: 45px;
     background: #abb1b5;
-    grid-row: span 1;
   }
-  #lblLastSynced, #lblLogin{
+  #lblLastSynced, #lblLogin {
     padding: 2px 5px 2px 5px;
-    float: left;
-    margin-top: 7px;
+    margin-top: 12px;
     margin-left: 2px; 
     font-family: 'Roboto', sans-serif;
   }
+  #lblLastSynced {
+    grid-column: 1 / span 2;
+  }
+  #lblLogin {
+    grid-column: 1 / span 8;
+  }
   #lastSyncedVal{
     padding: 2px 5px 2px 5px;
-    margin-top: 7px;
-    float: left;
+    margin-top: 12px;
+    grid-column: 3 / span 5;
     font-family: 'Roboto', sans-serif;
   }
   #btnSync{
     padding: 2px 5px 2px 5px;
-    float: right;
-    margin-top: 5px;
+    margin-top: 9px;
     margin-right: 2px; 
+    grid-column: 10;
   }
   #btnPrevious:focus, #btnNext:focus, #btnSync:focus {
     outline: none;
