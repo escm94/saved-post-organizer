@@ -75,8 +75,11 @@ const fetchPosts = async (afterParam) => {
         document.getElementById('btnSync').classList.remove("spin");
         document.getElementById('lblLastSynced').classList.add('hide');
         document.getElementById('lastSyncedVal').classList.add('hide');
-        document.getElementById('lblLogin').classList.remove('hide');
-        document.getElementById('lblLogin').classList.add('show');
+
+        const lblLogin = document.getElementById('lblLogin');
+        lblLogin.classList.remove('hide');
+        lblLogin.innerHTML = "<strong>Error: </strong>Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
+        lblLogin.classList.add('show');
     }
 };
 
@@ -144,7 +147,14 @@ const displayFolder = (folder) => {
 
 const displayPostsFromFolder = (folder, currentPageHigh) => {
     const totalPosts = folder.savedPosts.length;
-    const currentPageLow = (totalPosts < 25) ? 1 : currentPageHigh - 24;
+    let currentPageLow;
+
+    if (totalPosts < 1) {
+        currentPageLow = 0;
+    }
+    else {
+       currentPageLow = (totalPosts < 25) ? 1 : currentPageHigh - 24;
+    }
 
     currentPageHigh = (currentPageHigh <= totalPosts) ? currentPageHigh : totalPosts;
 
@@ -162,39 +172,39 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
     document.getElementById('btnNext').disabled = (currentPageHigh < totalPosts) ? false : true;
     configurePrevNextBtns(document.getElementById('btnPrevious').disabled, document.getElementById('btnNext').disabled);
 
-    if (document.getElementById('btnPrevious').disabled == false && !document.getElementById('btnPrevious').getAttribute('hasEventHandler')) {
+    if (document.getElementById('btnPrevious').disabled == false && !document.getElementById('btnPrevious').getAttribute('hasEventHandler'))
         document.getElementById('btnPrevious').addEventListener('click', btnPreviousOnClick.bind(null, folder, currentPageLow, currentPageHigh, totalPosts));
-    }
-    if (document.getElementById('btnNext').disabled == false && !document.getElementById('btnNext').getAttribute('hasEventHandler')) {
+
+    if (document.getElementById('btnNext').disabled == false && !document.getElementById('btnNext').getAttribute('hasEventHandler'))
         document.getElementById('btnNext').addEventListener('click', btnNextOnClick.bind(null, folder, currentPageHigh));
-    }
 };
 
 const configurePrevNextBtns = (btnPrevDisabled, btnNextDisabled) => {
     let oldPrevDisabled = btnPrevDisabled;
     let oldNextDisabled = btnNextDisabled;
 
-    document.getElementById('btnPrevious').disabled = false;
-    document.getElementById('btnNext').disabled = false;
+    const btnPrevious = document.getElementById('btnPrevious');
+    btnPrevious.disabled = false;
 
-    if (document.getElementById('btnPrevious').getAttribute('hasEventHandler')) {
-        // simplest way to remove the event listener given the nature of the callback function's params
-        const oldBtn = document.getElementById('btnPrevious');
-        const newBtn = oldBtn.cloneNode(true);
-        oldBtn.parentNode.replaceChild(newBtn, oldBtn);        
-        document.getElementById('btnPrevious').removeAttribute('hasEventHandler');
-    }
+    const btnNext = document.getElementById('btnNext')
+    btnNext.disabled = false;
 
-    if (document.getElementById('btnNext').getAttribute('hasEventHandler')) {
-        // simples way to remove the event listener given the nature of the callback function's params
-        const oldBtn = document.getElementById('btnNext');
-        const newBtn = oldBtn.cloneNode(true);
-        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-        document.getElementById('btnNext').removeAttribute('hasEventHandler');
-    }
+    if (btnPrevious.getAttribute('hasEventHandler'))
+        removeEventHandler('btnPrevious');
+
+    if (btnNext.getAttribute('hasEventHandler'))
+        removeEventHandler('btnNext');
 
     document.getElementById('btnPrevious').disabled = oldPrevDisabled;
     document.getElementById('btnNext').disabled = oldNextDisabled;
+};
+
+const removeEventHandler = (btnID) => {
+    // simplest way to remove the event listener given the nature of the callback functions' params
+    const oldBtn = document.getElementById(btnID);
+    const newBtn = oldBtn.cloneNode(true);
+    oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+    document.getElementById(btnID).removeAttribute('hasEventHandler');
 };
 
 const btnPreviousOnClick = (folder, currentPageLow, currentPageHigh, currentTotalPosts) => {
