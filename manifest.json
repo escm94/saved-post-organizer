@@ -12,9 +12,7 @@
         "SavedPostOrganizer.html"
       ],
       "permissions": [
-        "https://ssl.reddit.com/",
-        "https://oauth.reddit.com/",
-        "https://www.reddit.com/*"
+        "https://www.reddit.com"
       ],
       "background": {
         "persistent": false,
