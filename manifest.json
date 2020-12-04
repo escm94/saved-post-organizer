@@ -12,7 +12,7 @@
         "SavedPostOrganizer.html"
       ],
       "permissions": [
-        "https://www.reddit.com"
+        "https://www.reddit.com/*"
       ],
       "background": {
         "persistent": false,
