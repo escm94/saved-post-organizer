@@ -25,8 +25,6 @@ window.onload = () => {
   folders = [];
   posts = [];
 
-  chrome.windows.getCurrent()
-
   if (localStorage.getItem("folders") != null) {
     folders = JSON.parse(localStorage.getItem("folders"));
   }
