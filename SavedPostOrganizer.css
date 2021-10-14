@@ -1,5 +1,7 @@
 body{
   margin: 0px;
+  height: 540px;
+  width: 450px;
 }
 .extension{
     display: grid;
