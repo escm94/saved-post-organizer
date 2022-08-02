@@ -12,48 +12,41 @@ function handleSync() {
   responses = [];
 
   const allFolder = {
-    folderName: 'All',
-    savedPosts: []
+    folderName: "All",
+    savedPosts: [],
   };
   folders.push(allFolder);
 
   fetchPosts();
-};
+}
 
 window.onload = () => {
   folders = [];
   posts = [];
 
-  if (localStorage.getItem('folders') != null) {
-    folders = JSON.parse(localStorage.getItem('folders'));
-  }
-
-  if (localStorage.getItem('posts') != null) {
-    posts = JSON.parse(localStorage.getItem('posts'));
-  }
+  folders = JSON.parse(localStorage.getItem("folders")) ?? "";
+  posts = JSON.parse(localStorage.getItem("posts")) ?? "";
+  const pageHigh = posts.length > 25 ? 25 : posts.length;
 
   folders.forEach(displayFolder);
 
-  const pageHigh = posts.length > 25 ? 25 : posts.length;
-
   configurePrevNextBtns(false, false);
   displayPostsFromFolder(
-    folders.find((folder) => folder.folderName == 'All'),
+    folders.find((folder) => folder.folderName === "All"),
     pageHigh
   );
-  document.querySelector('#lastSyncedVal').innerHTML = localStorage.getItem(
-    'lastSynced'
-  );
+  document.querySelector("#lastSyncedVal").innerHTML =
+    localStorage.getItem("lastSynced");
 };
 
 async function fetchPosts(afterParam) {
   //TODO: obviously refine this
   try {
-    document.querySelector('#btnSync').classList.add('spin');
+    document.querySelector("#btnSync").classList.add("spin");
 
     const response = await fetch(
       `https://www.reddit.com/saved.json?limit=${postsPerRequest}${
-        afterParam ? '&after=' + afterParam : ''
+        afterParam ? "&after=" + afterParam : ""
       }`
     );
 
@@ -67,28 +60,28 @@ async function fetchPosts(afterParam) {
     }
 
     let tempDate = new Date(Date.now());
-    const lastSyncedDate = tempDate.toString().split(' GMT')[0];
+    const lastSyncedDate = tempDate.toString().split(" GMT")[0];
 
-    localStorage.setItem('lastSynced', lastSyncedDate);
-    let allFolder = folders.find((folder) => folder.folderName == 'All');
+    localStorage.setItem("lastSynced", lastSyncedDate);
+    let allFolder = folders.find((folder) => folder.folderName == "All");
     posts.forEach((post) => allFolder.savedPosts.push(post));
-    localStorage.setItem('folders', JSON.stringify(folders));
-    localStorage.setItem('posts', JSON.stringify(posts));
+    localStorage.setItem("folders", JSON.stringify(folders));
+    localStorage.setItem("posts", JSON.stringify(posts));
     displayAll();
 
-    document.querySelector('#btnSync').classList.remove('spin');
+    document.querySelector("#btnSync").classList.remove("spin");
   } catch (error) {
-    document.querySelector('#btnSync').classList.remove('spin');
-    document.querySelector('#lblLastSynced').classList.add('hide');
-    document.querySelector('#lastSyncedVal').classList.add('hide');
+    document.querySelector("#btnSync").classList.remove("spin");
+    document.querySelector("#lblLastSynced").classList.add("hide");
+    document.querySelector("#lastSyncedVal").classList.add("hide");
 
-    const lblLogin = document.querySelector('#lblLogin');
-    lblLogin.classList.remove('hide');
+    const lblLogin = document.querySelector("#lblLogin");
+    lblLogin.classList.remove("hide");
     lblLogin.innerHTML =
       "<strong>Error: </strong>Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
-    lblLogin.classList.add('show');
+    lblLogin.classList.add("show");
   }
-};
+}
 
 function processPost(savedItem) {
   if (
@@ -98,7 +91,7 @@ function processPost(savedItem) {
   ) {
     const newFolder = {
       folderName: savedItem.data.subreddit_name_prefixed,
-      savedPosts: []
+      savedPosts: [],
     };
     folders.push(newFolder);
   }
@@ -108,8 +101,8 @@ function processPost(savedItem) {
   };
 
   // post is a comment, so url won't work
-  if (savedItem.data.name.substring(0, 3) === 't1_') {
-    savedPost.link = 'https://reddit.com' + savedItem.data.permalink;
+  if (savedItem.data.name.substring(0, 3) === "t1_") {
+    savedPost.link = "https://reddit.com" + savedItem.data.permalink;
     savedPost.title = savedItem.data.link_title;
   } else {
     savedPost.link = savedItem.data.url;
@@ -130,38 +123,37 @@ function processPost(savedItem) {
     };
     posts.push(newPost);
   }
-};
+}
 
 function displayAll() {
   const pageHigh = posts.length > 25 ? 25 : posts.length;
 
-  document.querySelector('#lastSyncedVal').innerHTML = localStorage.getItem(
-    'lastSynced'
-  );
-  document.querySelector('#folders').innerHTML = '';
+  document.querySelector("#lastSyncedVal").innerHTML =
+    localStorage.getItem("lastSynced");
+  document.querySelector("#folders").innerHTML = "";
 
   folders.forEach(displayFolder);
-  document.querySelector('#folders').scrollTop = 0;
+  document.querySelector("#folders").scrollTop = 0;
   displayPostsFromFolder(
-    folders.find((folder) => folder.folderName == 'All'),
+    folders.find((folder) => folder.folderName == "All"),
     pageHigh
   );
-};
+}
 
 function displayFolder(folder) {
   const totalPosts = folder.savedPosts.length;
   const pageHigh = totalPosts > 25 ? 25 : totalPosts;
 
-  const btnFolder = document.createElement('div');
-  btnFolder.className = 'folder';
+  const btnFolder = document.createElement("div");
+  btnFolder.className = "folder";
   btnFolder.id = folder.folderName;
-  btnFolder.innerHTML = folder.folderName + '(' + totalPosts + ')';
-  btnFolder.addEventListener('click', function () {
+  btnFolder.innerHTML = folder.folderName + "(" + totalPosts + ")";
+  btnFolder.addEventListener("click", function () {
     configurePrevNextBtns(false, false);
     displayPostsFromFolder(folder, pageHigh);
   });
-  document.querySelector('#folders').appendChild(btnFolder);
-};
+  document.querySelector("#folders").appendChild(btnFolder);
+}
 
 function displayPostsFromFolder(folder, currentPageHigh) {
   const totalPosts = folder.savedPosts.length;
@@ -176,37 +168,37 @@ function displayPostsFromFolder(folder, currentPageHigh) {
   currentPageHigh =
     currentPageHigh <= totalPosts ? currentPageHigh : totalPosts;
 
-  const lblFolderName = document.querySelector('#lblFolderName');
+  const lblFolderName = document.querySelector("#lblFolderName");
   lblFolderName.innerHTML = folder.folderName;
-  lblFolderName.className = 'show';
+  lblFolderName.className = "show";
 
-  document.querySelector('#posts').innerHTML = '';
+  document.querySelector("#posts").innerHTML = "";
   const postsOnPage = folder.savedPosts.slice(
     currentPageLow - 1,
     currentPageHigh
   );
-  document.querySelector('#lblPages').innerHTML =
-    currentPageLow + '-' + currentPageHigh + ' of ' + totalPosts;
+  document.querySelector("#lblPages").innerHTML =
+    currentPageLow + "-" + currentPageHigh + " of " + totalPosts;
   postsOnPage.forEach(displayPost);
-  document.querySelector('#posts').scrollTop = 0;
+  document.querySelector("#posts").scrollTop = 0;
 
-  document.querySelector('#btnPrevious').disabled =
+  document.querySelector("#btnPrevious").disabled =
     currentPageLow > 1 ? false : true;
-  document.querySelector('#btnNext').disabled =
+  document.querySelector("#btnNext").disabled =
     currentPageHigh < totalPosts ? false : true;
   configurePrevNextBtns(
-    document.querySelector('#btnPrevious').disabled,
-    document.querySelector('#btnNext').disabled
+    document.querySelector("#btnPrevious").disabled,
+    document.querySelector("#btnNext").disabled
   );
 
   if (
-    document.querySelector('#btnPrevious').disabled == false &&
-    !document.querySelector('#btnPrevious').getAttribute('hasEventHandler')
+    document.querySelector("#btnPrevious").disabled == false &&
+    !document.querySelector("#btnPrevious").getAttribute("hasEventHandler")
   )
     document
-      .querySelector('#btnPrevious')
+      .querySelector("#btnPrevious")
       .addEventListener(
-        'click',
+        "click",
         btnPreviousOnClick.bind(
           null,
           folder,
@@ -217,74 +209,84 @@ function displayPostsFromFolder(folder, currentPageHigh) {
       );
 
   if (
-    document.querySelector('#btnNext').disabled == false &&
-    !document.querySelector('#btnNext').getAttribute('hasEventHandler')
+    document.querySelector("#btnNext").disabled == false &&
+    !document.querySelector("#btnNext").getAttribute("hasEventHandler")
   )
     document
-      .querySelector('#btnNext')
+      .querySelector("#btnNext")
       .addEventListener(
-        'click',
+        "click",
         btnNextOnClick.bind(null, folder, currentPageHigh)
       );
-};
+}
 
-function configurePrevNextBtns (btnPrevDisabled, btnNextDisabled) {
+function configurePrevNextBtns(btnPrevDisabled, btnNextDisabled) {
   let oldPrevDisabled = btnPrevDisabled;
   let oldNextDisabled = btnNextDisabled;
 
-  const btnPrevious = document.querySelector('#btnPrevious');
+  const btnPrevious = document.querySelector("#btnPrevious");
   btnPrevious.disabled = false;
 
-  const btnNext = document.querySelector('#btnNext');
+  const btnNext = document.querySelector("#btnNext");
   btnNext.disabled = false;
 
-  if (btnPrevious.getAttribute('hasEventHandler'))
-    removeEventHandler('btnPrevious');
+  if (btnPrevious.getAttribute("hasEventHandler"))
+    removeEventHandler("btnPrevious");
 
-  if (btnNext.getAttribute('hasEventHandler')) removeEventHandler('btnNext');
+  if (btnNext.getAttribute("hasEventHandler")) removeEventHandler("btnNext");
 
-  document.querySelector('#btnPrevious').disabled = oldPrevDisabled;
-  document.querySelector('#btnNext').disabled = oldNextDisabled;
-};
+  document.querySelector("#btnPrevious").disabled = oldPrevDisabled;
+  document.querySelector("#btnNext").disabled = oldNextDisabled;
+}
 
 function removeEventHandler(btnID) {
   // simplest way to remove the event listener given the nature of the callback functions' params
   const oldBtn = document.querySelector(`#${btnID}`);
   const newBtn = oldBtn.cloneNode(true);
   oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-  document.querySelector(`#${btnID}`).removeAttribute('hasEventHandler');
-};
+  document.querySelector(`#${btnID}`).removeAttribute("hasEventHandler");
+}
 
-function btnPreviousOnClick(folder, currentPageLow, currentPageHigh, currentTotalPosts) {
-  currentPageHigh = currentPageHigh === currentTotalPosts ? currentPageLow - 1 : currentPageHigh - 25;
-  document.querySelector('#btnPrevious').setAttribute('hasEventHandler', 'true');
+function btnPreviousOnClick(
+  folder,
+  currentPageLow,
+  currentPageHigh,
+  currentTotalPosts
+) {
+  currentPageHigh =
+    currentPageHigh === currentTotalPosts
+      ? currentPageLow - 1
+      : currentPageHigh - 25;
+  document
+    .querySelector("#btnPrevious")
+    .setAttribute("hasEventHandler", "true");
   displayPostsFromFolder(folder, currentPageHigh);
-};
+}
 
 function btnNextOnClick(folder, currentPageHigh) {
   currentPageHigh = currentPageHigh + 25;
-  document.querySelector('#btnNext').setAttribute('hasEventHandler', 'true');
+  document.querySelector("#btnNext").setAttribute("hasEventHandler", "true");
   displayPostsFromFolder(folder, currentPageHigh);
-};
+}
 
 function displayPost(savedPost) {
-  const post = document.createElement('div');
-  post.className = 'post';
+  const post = document.createElement("div");
+  post.className = "post";
   post.id = savedPost.id;
-  document.querySelector('#posts').appendChild(post);
+  document.querySelector("#posts").appendChild(post);
 
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = savedPost.link;
 
-  if (savedPost.id.substring(0, 3) === 't1_') {
-    link.innerHTML = '(comment)';
+  if (savedPost.id.substring(0, 3) === "t1_") {
+    link.innerHTML = "(comment)";
   }
 
   link.innerHTML += savedPost.title;
-  link.target = '_blank';
+  link.target = "_blank";
 
   document.querySelector(`#${post.id}`).appendChild(link);
-  document.querySelector('#posts').innerHTML += '<hr>';
-};
+  document.querySelector("#posts").innerHTML += "<hr>";
+}
 
-document.querySelector('#btnSync').addEventListener('click', handleSync);
+document.querySelector("#btnSync").addEventListener("click", handleSync);
