@@ -1,56 +1,77 @@
-const postsPerRequest = 100;
-const maxPostsToFetch = 1000;
-const maxRequests = maxPostsToFetch / postsPerRequest;
-
 let responses = [];
 let folders = [];
 let posts = [];
 
-function handleSync() {
-  folders = [];
-  posts = [];
-  responses = [];
+window.onload = () => {
+  const pageHigh = pageHighForFirstPage();
+  const lastSynced = getLastSyncedFromLocalStorage();
 
+  folders = getFoldersFromLocalStorage();
+  posts = getPostsFromLocalStorage();
+
+  const allFolder = getAllFolder();
+
+  folders.forEach(displayFolder);
+  configurePrevNextBtns(false, false);
+  displayPostsFromFolder(allFolder, pageHigh);
+  updateLastSyncedValue(lastSynced);
+};
+
+const pageHighForFirstPage = () => {
+  return posts.length > 25 ? 25 : posts.length;
+};
+
+const getAllFolder = () => {
+  return folders.find((folder) => folder.folderName === "All");
+};
+
+const getFoldersFromLocalStorage = () => {
+  return JSON.parse(localStorage.getItem("folders")) ?? [];
+};
+
+const getPostsFromLocalStorage = () => {
+  return JSON.parse(localStorage.getItem("posts")) ?? [];
+};
+
+const getLastSyncedFromLocalStorage = () => {
+  return localStorage.getItem("lastSynced") ?? "";
+};
+
+const updateLastSyncedValue = (lastsyncedValue) => {
+  document.querySelector("#lastSyncedVal").innerHTML = lastsyncedValue;
+};
+
+function handleSync() {
   const allFolder = {
     folderName: "All",
     savedPosts: [],
   };
+
+  folders = [];
+  posts = [];
+  responses = [];
+
   folders.push(allFolder);
 
   fetchPosts();
 }
 
-window.onload = () => {
-  folders = [];
-  posts = [];
-
-  folders = JSON.parse(localStorage.getItem("folders")) ?? "";
-  posts = JSON.parse(localStorage.getItem("posts")) ?? "";
-  const pageHigh = posts.length > 25 ? 25 : posts.length;
-
-  folders.forEach(displayFolder);
-
-  configurePrevNextBtns(false, false);
-  displayPostsFromFolder(
-    folders.find((folder) => folder.folderName === "All"),
-    pageHigh
-  );
-  document.querySelector("#lastSyncedVal").innerHTML =
-    localStorage.getItem("lastSynced");
-};
-
 async function fetchPosts(afterParam) {
-  //TODO: obviously refine this
+  const postsPerRequest = 100;
+  const maxPostsToFetch = 1000;
+  const maxRequests = maxPostsToFetch / postsPerRequest;
+
   try {
+    const baseURL = "https://www.reddit.com/saved.json";
+    const limitURLParam = `?limit=${postsPerRequest}$`;
+    const afterURLParam = `${afterParam ? "&after=" + afterParam : ""}`;
+    const wholeURL = `${baseURL}${limitURLParam}${afterURLParam}`;
+
     document.querySelector("#btnSync").classList.add("spin");
 
-    const response = await fetch(
-      `https://www.reddit.com/saved.json?limit=${postsPerRequest}${
-        afterParam ? "&after=" + afterParam : ""
-      }`
-    );
-
+    const response = await fetch(wholeURL);
     const responseJSON = await response.json();
+
     responses.push(responseJSON);
     responseJSON.data.children.forEach(processPost);
 
@@ -63,7 +84,7 @@ async function fetchPosts(afterParam) {
     const lastSyncedDate = tempDate.toString().split(" GMT")[0];
 
     localStorage.setItem("lastSynced", lastSyncedDate);
-    let allFolder = folders.find((folder) => folder.folderName == "All");
+    let allFolder = getAllFolder();
     posts.forEach((post) => allFolder.savedPosts.push(post));
     localStorage.setItem("folders", JSON.stringify(folders));
     localStorage.setItem("posts", JSON.stringify(posts));
@@ -127,6 +148,7 @@ function processPost(savedItem) {
 
 function displayAll() {
   const pageHigh = posts.length > 25 ? 25 : posts.length;
+  const allFolder = getAllFolder();
 
   document.querySelector("#lastSyncedVal").innerHTML =
     localStorage.getItem("lastSynced");
@@ -134,14 +156,15 @@ function displayAll() {
 
   folders.forEach(displayFolder);
   document.querySelector("#folders").scrollTop = 0;
-  displayPostsFromFolder(
-    folders.find((folder) => folder.folderName == "All"),
-    pageHigh
-  );
+  displayPostsFromFolder(allFolder, pageHigh);
 }
 
 function displayFolder(folder) {
-  const totalPosts = folder.savedPosts.length;
+  let totalPosts;
+  if (folder && folder.savedPosts) {
+    totalPosts = folder.savedPosts.length;
+  }
+
   const pageHigh = totalPosts > 25 ? 25 : totalPosts;
 
   const btnFolder = document.createElement("div");
@@ -156,8 +179,14 @@ function displayFolder(folder) {
 }
 
 function displayPostsFromFolder(folder, currentPageHigh) {
-  const totalPosts = folder.savedPosts.length;
-  let currentPageLow;
+  let totalPosts = 0;
+  let currentPageLow = 0;
+  let postsOnPage = [];
+  const lblFolderName = document.querySelector("#lblFolderName");
+
+  if (folder && folder.savedPosts) {
+    totalPosts = folder.savedPosts.length;
+  }
 
   if (totalPosts < 1) {
     currentPageLow = 0;
@@ -168,15 +197,18 @@ function displayPostsFromFolder(folder, currentPageHigh) {
   currentPageHigh =
     currentPageHigh <= totalPosts ? currentPageHigh : totalPosts;
 
-  const lblFolderName = document.querySelector("#lblFolderName");
-  lblFolderName.innerHTML = folder.folderName;
+  if (folder) {
+    lblFolderName.innerHTML = folder.folderName;
+  }
+
+  if (folder && folder.savedPosts) {
+    postsOnPage = folder.savedPosts.slice(currentPageLow - 1, currentPageHigh);
+  }
+
   lblFolderName.className = "show";
 
   document.querySelector("#posts").innerHTML = "";
-  const postsOnPage = folder.savedPosts.slice(
-    currentPageLow - 1,
-    currentPageHigh
-  );
+
   document.querySelector("#lblPages").innerHTML =
     currentPageLow + "-" + currentPageHigh + " of " + totalPosts;
   postsOnPage.forEach(displayPost);
