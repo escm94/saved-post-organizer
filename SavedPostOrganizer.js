@@ -41,7 +41,7 @@ const updateLastSyncedValue = (lastsyncedValue) => {
   document.querySelector("#lastSyncedVal").innerHTML = lastsyncedValue;
 };
 
-function handleSync() {
+const handleSync = () => {
   const allFolder = {
     folderName: "All",
     savedPosts: [],
@@ -54,9 +54,9 @@ function handleSync() {
   folders.push(allFolder);
 
   fetchPosts();
-}
+};
 
-async function fetchPosts(afterParam) {
+const fetchPosts = async (afterParam) => {
   const postsPerRequest = 100;
   const maxPostsToFetch = 1000;
   const maxRequests = maxPostsToFetch / postsPerRequest;
@@ -102,9 +102,9 @@ async function fetchPosts(afterParam) {
       "<strong>Error: </strong>Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
     lblLogin.classList.add("show");
   }
-}
+};
 
-function processPost(savedItem) {
+const processPost = (savedItem) => {
   if (
     folders.find(
       (folder) => folder.folderName === savedItem.data.subreddit_name_prefixed
@@ -144,9 +144,9 @@ function processPost(savedItem) {
     };
     posts.push(newPost);
   }
-}
+};
 
-function displayAll() {
+const displayAll = () => {
   const pageHigh = posts.length > 25 ? 25 : posts.length;
   const allFolder = getAllFolder();
 
@@ -157,9 +157,9 @@ function displayAll() {
   folders.forEach(displayFolder);
   document.querySelector("#folders").scrollTop = 0;
   displayPostsFromFolder(allFolder, pageHigh);
-}
+};
 
-function displayFolder(folder) {
+const displayFolder = (folder) => {
   let totalPosts;
   if (folder && folder.savedPosts) {
     totalPosts = folder.savedPosts.length;
@@ -176,9 +176,9 @@ function displayFolder(folder) {
     displayPostsFromFolder(folder, pageHigh);
   });
   document.querySelector("#folders").appendChild(btnFolder);
-}
+};
 
-function displayPostsFromFolder(folder, currentPageHigh) {
+const displayPostsFromFolder = (folder, currentPageHigh) => {
   let totalPosts = 0;
   let currentPageLow = 0;
   let postsOnPage = [];
@@ -250,9 +250,9 @@ function displayPostsFromFolder(folder, currentPageHigh) {
         "click",
         btnNextOnClick.bind(null, folder, currentPageHigh)
       );
-}
+};
 
-function configurePrevNextBtns(btnPrevDisabled, btnNextDisabled) {
+const configurePrevNextBtns = (btnPrevDisabled, btnNextDisabled) => {
   let oldPrevDisabled = btnPrevDisabled;
   let oldNextDisabled = btnNextDisabled;
 
@@ -269,22 +269,22 @@ function configurePrevNextBtns(btnPrevDisabled, btnNextDisabled) {
 
   document.querySelector("#btnPrevious").disabled = oldPrevDisabled;
   document.querySelector("#btnNext").disabled = oldNextDisabled;
-}
+};
 
-function removeEventHandler(btnID) {
+const removeEventHandler = (btnID) => {
   // simplest way to remove the event listener given the nature of the callback functions' params
   const oldBtn = document.querySelector(`#${btnID}`);
   const newBtn = oldBtn.cloneNode(true);
   oldBtn.parentNode.replaceChild(newBtn, oldBtn);
   document.querySelector(`#${btnID}`).removeAttribute("hasEventHandler");
-}
+};
 
-function btnPreviousOnClick(
+const btnPreviousOnClick = (
   folder,
   currentPageLow,
   currentPageHigh,
   currentTotalPosts
-) {
+) => {
   currentPageHigh =
     currentPageHigh === currentTotalPosts
       ? currentPageLow - 1
@@ -293,15 +293,15 @@ function btnPreviousOnClick(
     .querySelector("#btnPrevious")
     .setAttribute("hasEventHandler", "true");
   displayPostsFromFolder(folder, currentPageHigh);
-}
+};
 
-function btnNextOnClick(folder, currentPageHigh) {
+const btnNextOnClick = (folder, currentPageHigh) => {
   currentPageHigh = currentPageHigh + 25;
   document.querySelector("#btnNext").setAttribute("hasEventHandler", "true");
   displayPostsFromFolder(folder, currentPageHigh);
-}
+};
 
-function displayPost(savedPost) {
+const displayPost = (savedPost) => {
   const post = document.createElement("div");
   post.className = "post";
   post.id = savedPost.id;
@@ -319,6 +319,6 @@ function displayPost(savedPost) {
 
   document.querySelector(`#${post.id}`).appendChild(link);
   document.querySelector("#posts").innerHTML += "<hr>";
-}
+};
 
 document.querySelector("#btnSync").addEventListener("click", handleSync);
