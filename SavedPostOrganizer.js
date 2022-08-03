@@ -1,3 +1,4 @@
+// TODO: let's remove the need for global vars
 let responses = [];
 let folders = [];
 let posts = [];
@@ -42,34 +43,33 @@ const updateLastSyncedValue = (lastsyncedValue) => {
 };
 
 const handleSync = () => {
-  const allFolder = {
-    folderName: "All",
-    savedPosts: [],
-  };
+  clearDataForRefresh();
+  const emptyAllFolder = getReinitializedAllFolder();
 
-  folders = [];
-  posts = [];
-  responses = [];
-
-  folders.push(allFolder);
+  folders.push(emptyAllFolder);
 
   fetchPosts();
 };
 
+const clearDataForRefresh = () => {
+  folders = [];
+  posts = [];
+  responses = [];
+};
+
+const getReinitializedAllFolder = () => {
+  const allFolder = {
+    folderName: "All",
+    savedPosts: [],
+  };
+  return allFolder;
+};
 const fetchPosts = async (afterParam) => {
-  const postsPerRequest = 100;
-  const maxPostsToFetch = 1000;
-  const maxRequests = maxPostsToFetch / postsPerRequest;
-
   try {
-    const baseURL = "https://www.reddit.com/saved.json";
-    const limitURLParam = `?limit=${postsPerRequest}$`;
-    const afterURLParam = `${afterParam ? "&after=" + afterParam : ""}`;
-    const wholeURL = `${baseURL}${limitURLParam}${afterURLParam}`;
+    startSyncAnimation();
 
-    document.querySelector("#btnSync").classList.add("spin");
-
-    const response = await fetch(wholeURL);
+    const URL = generateURLStringForFetch();
+    const response = await fetch(URL);
     const responseJSON = await response.json();
 
     responses.push(responseJSON);
@@ -90,9 +90,9 @@ const fetchPosts = async (afterParam) => {
     localStorage.setItem("posts", JSON.stringify(posts));
     displayAll();
 
-    document.querySelector("#btnSync").classList.remove("spin");
+    stopSyncAnimation();
   } catch (error) {
-    document.querySelector("#btnSync").classList.remove("spin");
+    stopSyncAnimation();
     document.querySelector("#lblLastSynced").classList.add("hide");
     document.querySelector("#lastSyncedVal").classList.add("hide");
 
@@ -102,6 +102,26 @@ const fetchPosts = async (afterParam) => {
       "<strong>Error: </strong>Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
     lblLogin.classList.add("show");
   }
+};
+
+const startSyncAnimation = () => {
+  document.querySelector("#btnSync").classList.add("spin");
+};
+
+const stopSyncAnimation = () => {
+  document.querySelector("#btnSync").classList.remove("spin");
+};
+
+const generateURLStringForFetch = () => {
+  const postsPerRequest = 100;
+  const maxPostsToFetch = 1000;
+  const maxRequests = maxPostsToFetch / postsPerRequest;
+  const baseURL = "https://www.reddit.com/saved.json";
+  const limitURLParam = `?limit=${postsPerRequest}$`;
+  const afterURLParam = `${afterParam ? "&after=" + afterParam : ""}`;
+  const wholeURL = `${baseURL}${limitURLParam}${afterURLParam}`;
+
+  return wholeURL;
 };
 
 const processPost = (savedItem) => {
