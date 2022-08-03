@@ -44,9 +44,9 @@ const updateLastSyncedValue = (lastsyncedValue) => {
 
 const handleSync = () => {
   clearDataForRefresh();
-  const emptyAllFolder = getReinitializedAllFolder();
+  const emptiedAllFolder = getReinitializedAllFolder();
 
-  folders.push(emptyAllFolder);
+  folders.push(emptiedAllFolder);
 
   fetchPosts();
 };
@@ -145,7 +145,7 @@ const displayLoginMessage = () => {
   const lblLogin = document.querySelector("#lblLogin");
   lblLogin.classList.remove("hide");
   lblLogin.innerHTML =
-    "<strong>Error: </strong>Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
+    "Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
   lblLogin.classList.add("show");
 };
 
