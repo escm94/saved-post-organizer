@@ -64,43 +64,37 @@ const getReinitializedAllFolder = () => {
   };
   return allFolder;
 };
-const fetchPosts = async (afterParam) => {
+const fetchPosts = async (afterParamForURL) => {
   try {
     startSyncAnimation();
 
-    const URL = generateURLStringForFetch();
+    const postsPerRequest = 100;
+    const maxPostsToFetch = 1000;
+    const maxRequests = maxPostsToFetch / postsPerRequest;
+    const URL = generateURLStringForFetch(afterParamForURL, postsPerRequest);
     const response = await fetch(URL);
     const responseJSON = await response.json();
 
-    responses.push(responseJSON);
-    responseJSON.data.children.forEach(processPost);
+    processResponses(responseJSON);
 
     if (responseJSON.data.after && responses.length < maxRequests) {
       fetchPosts(responseJSON.data.after);
       return;
     }
 
-    let tempDate = new Date(Date.now());
-    const lastSyncedDate = tempDate.toString().split(" GMT")[0];
+    addAllPostsToAllFolder();
 
-    localStorage.setItem("lastSynced", lastSyncedDate);
-    let allFolder = getAllFolder();
-    posts.forEach((post) => allFolder.savedPosts.push(post));
-    localStorage.setItem("folders", JSON.stringify(folders));
-    localStorage.setItem("posts", JSON.stringify(posts));
+    updateLocalStorageData();
+
     displayAll();
 
     stopSyncAnimation();
   } catch (error) {
     stopSyncAnimation();
-    document.querySelector("#lblLastSynced").classList.add("hide");
-    document.querySelector("#lastSyncedVal").classList.add("hide");
 
-    const lblLogin = document.querySelector("#lblLogin");
-    lblLogin.classList.remove("hide");
-    lblLogin.innerHTML =
-      "<strong>Error: </strong>Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
-    lblLogin.classList.add("show");
+    hideDefaultTextInFooter();
+
+    displayLoginMessage();
   }
 };
 
@@ -112,16 +106,47 @@ const stopSyncAnimation = () => {
   document.querySelector("#btnSync").classList.remove("spin");
 };
 
-const generateURLStringForFetch = () => {
-  const postsPerRequest = 100;
-  const maxPostsToFetch = 1000;
-  const maxRequests = maxPostsToFetch / postsPerRequest;
+const generateURLStringForFetch = (afterParamForURL, postsPerRequest) => {
   const baseURL = "https://www.reddit.com/saved.json";
   const limitURLParam = `?limit=${postsPerRequest}$`;
-  const afterURLParam = `${afterParam ? "&after=" + afterParam : ""}`;
+  const afterURLParam = `${
+    afterParamForURL ? "&after=" + afterParamForURL : ""
+  }`;
   const wholeURL = `${baseURL}${limitURLParam}${afterURLParam}`;
 
   return wholeURL;
+};
+
+const processResponses = (responseJSON) => {
+  responses.push(responseJSON);
+  responseJSON.data.children.forEach(processPost);
+};
+
+const updateLocalStorageData = () => {
+  const tempDate = new Date(Date.now());
+  const lastSyncedDate = tempDate.toString().split(" GMT")[0];
+
+  localStorage.setItem("lastSynced", lastSyncedDate);
+  localStorage.setItem("folders", JSON.stringify(folders));
+  localStorage.setItem("posts", JSON.stringify(posts));
+};
+
+const addAllPostsToAllFolder = () => {
+  const allFolder = getAllFolder();
+  posts.forEach((post) => allFolder.savedPosts.push(post));
+};
+
+const hideDefaultTextInFooter = () => {
+  document.querySelector("#lblLastSynced").classList.add("hide");
+  document.querySelector("#lastSyncedVal").classList.add("hide");
+};
+
+const displayLoginMessage = () => {
+  const lblLogin = document.querySelector("#lblLogin");
+  lblLogin.classList.remove("hide");
+  lblLogin.innerHTML =
+    "<strong>Error: </strong>Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
+  lblLogin.classList.add("show");
 };
 
 const processPost = (savedItem) => {
