@@ -108,7 +108,7 @@ const stopSyncAnimation = () => {
 
 const generateURLStringForFetch = (afterParamForURL, postsPerRequest) => {
   const baseURL = "https://www.reddit.com/saved.json";
-  const limitURLParam = `?limit=${postsPerRequest}$`;
+  const limitURLParam = `?limit=${postsPerRequest}`;
   const afterURLParam = `${
     afterParamForURL ? "&after=" + afterParamForURL : ""
   }`;
@@ -150,13 +150,11 @@ const displayLoginMessage = () => {
 };
 
 const processPost = (savedItem) => {
-  if (
-    folders.find(
-      (folder) => folder.folderName === savedItem.data.subreddit_name_prefixed
-    ) == null
-  ) {
+  const savedItemSubredditName = savedItem.data.subreddit_name_prefixed;
+
+  if (!subredditFolderExists(savedItemSubredditName)) {
     const newFolder = {
-      folderName: savedItem.data.subreddit_name_prefixed,
+      folderName: savedItemSubredditName,
       savedPosts: [],
     };
     folders.push(newFolder);
@@ -166,8 +164,7 @@ const processPost = (savedItem) => {
     id: savedItem.data.name,
   };
 
-  // post is a comment, so url won't work
-  if (savedItem.data.name.substring(0, 3) === "t1_") {
+  if (savedItemIsAComment(savedItem)) {
     savedPost.link = "https://reddit.com" + savedItem.data.permalink;
     savedPost.title = savedItem.data.link_title;
   } else {
@@ -175,22 +172,44 @@ const processPost = (savedItem) => {
     savedPost.title = savedItem.data.title;
   }
 
-  folders
-    .find(
-      (folder) => folder.folderName === savedItem.data.subreddit_name_prefixed
-    )
-    .savedPosts.push(savedPost);
+  addSavedPostToFolderArray(savedItemSubredditName, savedPost);
 
-  if (posts.find((post) => post.id === savedPost.id) == null) {
-    const newPost = {
-      id: savedPost.id,
-      title: savedPost.title,
-      link: savedPost.link,
-    };
-    posts.push(newPost);
+  if (!postExistsInPostArray(savedPost.id)) {
+    addSavedPostToPostsArray(savedPost);
   }
 };
 
+const subredditFolderExists = (savedItemSubredditName) => {
+  return (
+    folders.find((folder) => folder.folderName === savedItemSubredditName) !=
+    null
+  );
+};
+
+const savedItemIsAComment = (savedItem) => {
+  return savedItem.data.name.substring(0, 3) === "t1_";
+};
+
+const addSavedPostToFolderArray = (folderName, savedPost) => {
+  folders
+    .find((folder) => folder.folderName === folderName)
+    .savedPosts.push(savedPost);
+};
+
+const postExistsInPostArray = (postID) => {
+  return posts.find((post) => post.id === postID) != null;
+};
+
+const addSavedPostToPostsArray = (savedPost) => {
+  const newPost = {
+    id: savedPost.id,
+    title: savedPost.title,
+    link: savedPost.link,
+  };
+  posts.push(newPost);
+};
+
+// TODO: continue breaking up functions below, just as we did with those above
 const displayAll = () => {
   const pageHigh = posts.length > 25 ? 25 : posts.length;
   const allFolder = getAllFolder();
@@ -317,7 +336,7 @@ const configurePrevNextBtns = (btnPrevDisabled, btnNextDisabled) => {
 };
 
 const removeEventHandler = (btnID) => {
-  // simplest way to remove the event listener given the nature of the callback functions' params
+  // TODO: I highly doubt this is the way to go about it...revisit
   const oldBtn = document.querySelector(`#${btnID}`);
   const newBtn = oldBtn.cloneNode(true);
   oldBtn.parentNode.replaceChild(newBtn, oldBtn);
