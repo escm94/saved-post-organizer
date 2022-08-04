@@ -4,12 +4,11 @@ let folders = [];
 let posts = [];
 
 window.onload = () => {
-  const pageHigh = pageHighForFirstPage();
-  const lastSynced = getLastSyncedFromLocalStorage();
-
   folders = getFoldersFromLocalStorage();
   posts = getPostsFromLocalStorage();
 
+  const pageHigh = pageHighForFirstPage();
+  const lastSynced = getLastSyncedFromLocalStorage();
   const allFolder = getAllFolder();
 
   folders.forEach(displayFolder);
