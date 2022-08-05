@@ -7,9 +7,9 @@ window.onload = () => {
   folders = getFoldersFromLocalStorage();
   posts = getPostsFromLocalStorage();
 
-  const pageHigh = pageHighForFirstPage();
-  const lastSynced = getLastSyncedFromLocalStorage();
   const allFolder = getAllFolder();
+  const pageHigh = pageHighForInitialPage(allFolder.savedPosts.length);
+  const lastSynced = getLastSyncedFromLocalStorage();
 
   populateFoldersArea();
   configurePrevNextBtns(false, false);
@@ -17,8 +17,8 @@ window.onload = () => {
   updateLastSyncedValue(lastSynced);
 };
 
-const pageHighForFirstPage = () => {
-  return posts.length > 25 ? 25 : posts.length;
+const pageHighForInitialPage = (numPostsInFolder) => {
+  return numPostsInFolder > 25 ? 25 : numPostsInFolder;
 };
 
 const getAllFolder = () => {
@@ -204,8 +204,8 @@ const addSavedPostToPostsArray = (savedPost) => {
 };
 
 const displayAll = () => {
-  const pageHigh = posts.length > 25 ? 25 : posts.length;
   const allFolder = getAllFolder();
+  const pageHigh = pageHighForInitialPage(allFolder.savedPosts.length);
   const lastSynced = getLastSyncedFromLocalStorage();
 
   updateLastSyncedValue(lastSynced);
@@ -234,17 +234,17 @@ const clearFoldersArea = () => {
 };
 
 const displayFolder = (folder) => {
-  let totalPosts;
+  let numPostsInFolder;
   if (folder && folder.savedPosts) {
-    totalPosts = folder.savedPosts.length;
+    numPostsInFolder = folder.savedPosts.length;
   }
 
-  const pageHigh = totalPosts > 25 ? 25 : totalPosts;
+  const pageHigh = pageHighForInitialPage(numPostsInFolder);
 
   const btnFolder = document.createElement("div");
   btnFolder.className = "folder";
   btnFolder.id = folder.folderName;
-  btnFolder.innerHTML = folder.folderName + "(" + totalPosts + ")";
+  btnFolder.innerHTML = folder.folderName + "(" + numPostsInFolder + ")";
   btnFolder.addEventListener("click", function () {
     configurePrevNextBtns(false, false);
     displayPostsFromFolder(folder, pageHigh);
