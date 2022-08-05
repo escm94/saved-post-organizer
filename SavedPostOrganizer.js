@@ -11,7 +11,7 @@ window.onload = () => {
   const lastSynced = getLastSyncedFromLocalStorage();
   const allFolder = getAllFolder();
 
-  folders.forEach(displayFolder);
+  populateFoldersArea();
   configurePrevNextBtns(false, false);
   displayPostsFromFolder(allFolder, pageHigh);
   updateLastSyncedValue(lastSynced);
@@ -200,26 +200,37 @@ const postExistsInPostArray = (postID) => {
 };
 
 const addSavedPostToPostsArray = (savedPost) => {
-  const newPost = {
-    id: savedPost.id,
-    title: savedPost.title,
-    link: savedPost.link,
-  };
-  posts.push(newPost);
+  posts.push(savedPost);
 };
 
-// TODO: continue breaking up functions below, just as we did with those above
 const displayAll = () => {
   const pageHigh = posts.length > 25 ? 25 : posts.length;
   const allFolder = getAllFolder();
+  const lastSynced = getLastSyncedFromLocalStorage();
 
-  document.querySelector("#lastSyncedVal").innerHTML =
-    localStorage.getItem("lastSynced");
-  document.querySelector("#folders").innerHTML = "";
+  updateLastSyncedValue(lastSynced);
 
-  folders.forEach(displayFolder);
-  document.querySelector("#folders").scrollTop = 0;
+  refreshFoldersArea();
+
   displayPostsFromFolder(allFolder, pageHigh);
+};
+
+const refreshFoldersArea = () => {
+  clearFoldersArea();
+  populateFoldersArea();
+  resetScrollTop();
+};
+
+const populateFoldersArea = () => {
+  folders.forEach(displayFolder);
+};
+
+const resetScrollTop = () => {
+  document.querySelector("#folders").scrollTop = 0;
+};
+
+const clearFoldersArea = () => {
+  document.querySelector("#folders").innerHTML = "";
 };
 
 const displayFolder = (folder) => {
