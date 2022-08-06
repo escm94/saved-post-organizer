@@ -221,34 +221,38 @@ const refreshFoldersArea = () => {
   resetScrollTop();
 };
 
+const clearFoldersArea = () => {
+  document.querySelector("#folders").innerHTML = "";
+};
+
 const populateFoldersArea = () => {
-  folders.forEach(displayFolder);
+  folders.forEach(generateFolderButton);
 };
 
 const resetScrollTop = () => {
   document.querySelector("#folders").scrollTop = 0;
 };
 
-const clearFoldersArea = () => {
-  document.querySelector("#folders").innerHTML = "";
-};
-
-const displayFolder = (folder) => {
-  let numPostsInFolder;
-  if (folder && folder.savedPosts) {
-    numPostsInFolder = folder.savedPosts.length;
-  }
-
+const generateFolderButton = (folder) => {
+  const numPostsInFolder = folder?.savedPosts?.length;
   const pageHigh = pageHighForInitialPage(numPostsInFolder);
 
   const btnFolder = document.createElement("div");
   btnFolder.className = "folder";
   btnFolder.id = folder.folderName;
-  btnFolder.innerHTML = folder.folderName + "(" + numPostsInFolder + ")";
+  btnFolder.innerHTML = `${folder.folderName}(${numPostsInFolder})`;
+  addEventListenerFolderButton(btnFolder, folder, pageHigh);
+  addFolderButtonToPage(btnFolder);
+};
+
+const addEventListenerFolderButton = (btnFolder, folder, pageHigh) => {
   btnFolder.addEventListener("click", function () {
     configurePrevNextBtns(false, false);
     displayPostsFromFolder(folder, pageHigh);
   });
+};
+
+const addFolderButtonToPage = (btnFolder) => {
   document.querySelector("#folders").appendChild(btnFolder);
 };
 
