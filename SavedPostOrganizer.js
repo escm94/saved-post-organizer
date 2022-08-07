@@ -12,11 +12,15 @@ window.onload = () => {
   const lastSynced = getLastSyncedFromLocalStorage();
 
   populateFoldersArea();
-  document.querySelector("#btnPrevious").disabled = false;
-  document.querySelector("#btnNext").disabled = false;
-  configurePreviousNextBtns();
+  enablePreviousAndNextButtons();
+  configurePreviousAndNextButtons();
   displayPostsFromFolder(allFolder, pageHigh);
   updateLastSyncedValue(lastSynced);
+};
+
+const enablePreviousAndNextButtons = () => {
+  document.querySelector("#btnPrevious").disabled = false;
+  document.querySelector("#btnNext").disabled = false;
 };
 
 const pageHighForInitialPage = (numPostsInFolder) => {
@@ -249,7 +253,8 @@ const generateFolderButton = (folder) => {
 
 const addEventListenerFolderButton = (btnFolder, folder, pageHigh) => {
   btnFolder.addEventListener("click", function () {
-    configurePrevNextBtns(false, false);
+    enablePreviousAndNextButtons();
+    configurePreviousAndNextButtons();
     displayPostsFromFolder(folder, pageHigh);
   });
 };
@@ -285,7 +290,7 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
 
   setBtnPreviousDisabled(currentPageLow);
   setBtnNextDisabled(currentPageHigh, totalPosts);
-  configurePreviousNextBtns();
+  configurePreviousAndNextButtons();
 
   const btnPreviousDisabled = document.querySelector("#btnPrevious").disabled;
   const btnPreviousHasEventHandler = document
@@ -355,7 +360,7 @@ const setBtnNextDisabled = (currentPageHigh, totalPosts) => {
     currentPageHigh < totalPosts ? false : true;
 };
 
-const configurePreviousNextBtns = () => {
+const configurePreviousAndNextButtons = () => {
   let oldPrevDisabled = document.querySelector("#btnPrevious").disabled;
   let oldNextDisabled = document.querySelector("#btnNext").disabled;
 
