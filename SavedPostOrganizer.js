@@ -12,7 +12,9 @@ window.onload = () => {
   const lastSynced = getLastSyncedFromLocalStorage();
 
   populateFoldersArea();
-  configurePrevNextBtns(false, false);
+  document.querySelector("#btnPrevious").disabled = false;
+  document.querySelector("#btnNext").disabled = false;
+  configurePreviousNextBtns();
   displayPostsFromFolder(allFolder, pageHigh);
   updateLastSyncedValue(lastSynced);
 };
@@ -218,7 +220,7 @@ const displayAll = () => {
 const refreshFoldersArea = () => {
   clearFoldersArea();
   populateFoldersArea();
-  resetScrollTop();
+  resetFoldersScrollTop();
 };
 
 const clearFoldersArea = () => {
@@ -229,7 +231,7 @@ const populateFoldersArea = () => {
   folders.forEach(generateFolderButton);
 };
 
-const resetScrollTop = () => {
+const resetFoldersScrollTop = () => {
   document.querySelector("#folders").scrollTop = 0;
 };
 
@@ -275,27 +277,27 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
   }
 
   populateLblFolderName(folder.folderName);
-
   populateLblPages(currentPageLow, currentPageHigh, totalPosts);
 
   clearPostsArea();
-
   postsOnPage.forEach(displayPost);
-  document.querySelector("#posts").scrollTop = 0;
+  resetPostsScrollTop();
 
-  document.querySelector("#btnPrevious").disabled =
-    currentPageLow > 1 ? false : true;
-  document.querySelector("#btnNext").disabled =
-    currentPageHigh < totalPosts ? false : true;
-  configurePrevNextBtns(
-    document.querySelector("#btnPrevious").disabled,
-    document.querySelector("#btnNext").disabled
-  );
+  setBtnPreviousDisabled(currentPageLow);
+  setBtnNextDisabled(currentPageHigh, totalPosts);
+  configurePreviousNextBtns();
 
-  if (
-    document.querySelector("#btnPrevious").disabled == false &&
-    !document.querySelector("#btnPrevious").getAttribute("hasEventHandler")
-  )
+  const btnPreviousDisabled = document.querySelector("#btnPrevious").disabled;
+  const btnPreviousHasEventHandler = document
+    .querySelector("#btnPrevious")
+    .getAttribute("hasEventHandler");
+
+  const btnNextDisabled = document.querySelector("#btnNext").disabled;
+  const btnNextHasEventHandler = document
+    .querySelector("#btnNext")
+    .getAttribute("hasEventHandler");
+
+  if (!btnPreviousDisabled && !btnPreviousHasEventHandler)
     document
       .querySelector("#btnPrevious")
       .addEventListener(
@@ -309,16 +311,17 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
         )
       );
 
-  if (
-    document.querySelector("#btnNext").disabled == false &&
-    !document.querySelector("#btnNext").getAttribute("hasEventHandler")
-  )
+  if (!btnNextDisabled && !btnNextHasEventHandler)
     document
       .querySelector("#btnNext")
       .addEventListener(
         "click",
         btnNextOnClick.bind(null, folder, currentPageHigh)
       );
+};
+
+const resetPostsScrollTop = () => {
+  document.querySelector("#posts").scrollTop = 0;
 };
 
 const clearPostsArea = () => {
@@ -342,9 +345,19 @@ const populateLblPages = (currentPageLow, currentPageHigh, totalPosts) => {
   ).innerHTML = `${currentPageLow}-${currentPageHigh} of ${totalPosts}`;
 };
 
-const configurePrevNextBtns = (btnPrevDisabled, btnNextDisabled) => {
-  let oldPrevDisabled = btnPrevDisabled;
-  let oldNextDisabled = btnNextDisabled;
+const setBtnPreviousDisabled = (currentPageLow) => {
+  document.querySelector("#btnPrevious").disabled =
+    currentPageLow > 1 ? false : true;
+};
+
+const setBtnNextDisabled = (currentPageHigh, totalPosts) => {
+  document.querySelector("#btnNext").disabled =
+    currentPageHigh < totalPosts ? false : true;
+};
+
+const configurePreviousNextBtns = () => {
+  let oldPrevDisabled = document.querySelector("#btnPrevious").disabled;
+  let oldNextDisabled = document.querySelector("#btnNext").disabled;
 
   const btnPrevious = document.querySelector("#btnPrevious");
   btnPrevious.disabled = false;
