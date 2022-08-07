@@ -257,14 +257,9 @@ const addFolderButtonToPage = (btnFolder) => {
 };
 
 const displayPostsFromFolder = (folder, currentPageHigh) => {
-  let totalPosts = 0;
+  const totalPosts = folder?.savedPosts?.length;
   let currentPageLow = 0;
   let postsOnPage = [];
-  const lblFolderName = document.querySelector("#lblFolderName");
-
-  if (folder && folder.savedPosts) {
-    totalPosts = folder.savedPosts.length;
-  }
 
   if (totalPosts < 1) {
     currentPageLow = 0;
@@ -275,20 +270,16 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
   currentPageHigh =
     currentPageHigh <= totalPosts ? currentPageHigh : totalPosts;
 
-  if (folder) {
-    lblFolderName.innerHTML = folder.folderName;
-  }
-
   if (folder && folder.savedPosts) {
     postsOnPage = folder.savedPosts.slice(currentPageLow - 1, currentPageHigh);
   }
 
-  lblFolderName.className = "show";
+  populateLblFolderName(folder.folderName);
 
-  document.querySelector("#posts").innerHTML = "";
+  populateLblPages(currentPageLow, currentPageHigh, totalPosts);
 
-  document.querySelector("#lblPages").innerHTML =
-    currentPageLow + "-" + currentPageHigh + " of " + totalPosts;
+  clearPostsArea();
+
   postsOnPage.forEach(displayPost);
   document.querySelector("#posts").scrollTop = 0;
 
@@ -328,6 +319,27 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
         "click",
         btnNextOnClick.bind(null, folder, currentPageHigh)
       );
+};
+
+const clearPostsArea = () => {
+  document.querySelector("#posts").innerHTML = "";
+};
+
+const populateLblFolderName = (folderName) => {
+  const lblFolderName = document.querySelector("#lblFolderName");
+  lblFolderName.innerHTML = folderName;
+  displayLblFolderName();
+};
+
+const displayLblFolderName = () => {
+  const lblFolderName = document.querySelector("#lblFolderName");
+  lblFolderName.className = "show";
+};
+
+const populateLblPages = (currentPageLow, currentPageHigh, totalPosts) => {
+  document.querySelector(
+    "#lblPages"
+  ).innerHTML = `${currentPageLow}-${currentPageHigh} of ${totalPosts}`;
 };
 
 const configurePrevNextBtns = (btnPrevDisabled, btnNextDisabled) => {
