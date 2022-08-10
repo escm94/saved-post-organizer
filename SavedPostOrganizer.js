@@ -263,23 +263,16 @@ const addFolderButtonToPage = (btnFolder) => {
   document.querySelector("#folders").appendChild(btnFolder);
 };
 
+// TODO: continue breaking up later
 const displayPostsFromFolder = (folder, currentPageHigh) => {
   const totalPosts = folder?.savedPosts?.length;
-  let currentPageLow = 0;
-  let postsOnPage = [];
+  const currentPageLow = currentPageLowValue(totalPosts, currentPageHigh);
 
-  if (totalPosts < 1) {
-    currentPageLow = 0;
-  } else {
-    currentPageLow = totalPosts < 25 ? 1 : currentPageHigh - 24;
-  }
-
-  currentPageHigh =
-    currentPageHigh <= totalPosts ? currentPageHigh : totalPosts;
-
-  if (folder && folder.savedPosts) {
-    postsOnPage = folder.savedPosts.slice(currentPageLow - 1, currentPageHigh);
-  }
+  currentPageHigh = currentPageHighValue(currentPageHigh, totalPosts);
+  const postsOnPage = folder?.savedPosts?.slice(
+    currentPageLow - 1,
+    currentPageHigh
+  );
 
   populateLblFolderName(folder.folderName);
   populateLblPages(currentPageLow, currentPageHigh, totalPosts);
@@ -292,17 +285,7 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
   setBtnNextDisabled(currentPageHigh, totalPosts);
   configurePreviousAndNextButtons();
 
-  const btnPreviousDisabled = document.querySelector("#btnPrevious").disabled;
-  const btnPreviousHasEventHandler = document
-    .querySelector("#btnPrevious")
-    .getAttribute("hasEventHandler");
-
-  const btnNextDisabled = document.querySelector("#btnNext").disabled;
-  const btnNextHasEventHandler = document
-    .querySelector("#btnNext")
-    .getAttribute("hasEventHandler");
-
-  if (!btnPreviousDisabled && !btnPreviousHasEventHandler)
+  if (!isBtnPreviousDisabled() && !btnPreviousHasEventHandler())
     document
       .querySelector("#btnPrevious")
       .addEventListener(
@@ -314,15 +297,15 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
           currentPageHigh,
           totalPosts
         )
-      );
+      ); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
 
-  if (!btnNextDisabled && !btnNextHasEventHandler)
+  if (!isBtnPreviousDisabled() && !btnNextHasEventHandler())
     document
       .querySelector("#btnNext")
       .addEventListener(
         "click",
         btnNextOnClick.bind(null, folder, currentPageHigh)
-      );
+      ); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
 };
 
 const resetPostsScrollTop = () => {
@@ -361,8 +344,8 @@ const setBtnNextDisabled = (currentPageHigh, totalPosts) => {
 };
 
 const configurePreviousAndNextButtons = () => {
-  let oldPrevDisabled = document.querySelector("#btnPrevious").disabled;
-  let oldNextDisabled = document.querySelector("#btnNext").disabled;
+  const oldPrevDisabled = document.querySelector("#btnPrevious").disabled;
+  const oldNextDisabled = document.querySelector("#btnNext").disabled;
 
   const btnPrevious = document.querySelector("#btnPrevious");
   btnPrevious.disabled = false;
@@ -379,8 +362,42 @@ const configurePreviousAndNextButtons = () => {
   document.querySelector("#btnNext").disabled = oldNextDisabled;
 };
 
+const isBtnPreviousDisabled = () => {
+  return document.querySelector("#btnPrevious").disabled;
+};
+
+const isBtnNextDisabled = () => {
+  return document.querySelector("#btnNext").disabled;
+};
+
+const btnPreviousHasEventHandler = () => {
+  return document.querySelector("#btnPrevious").getAttribute("hasEventHandler");
+};
+
+const btnNextHasEventHandler = () => {
+  return document.querySelector("#btnNext").getAttribute("hasEventHandler");
+};
+
+const currentPageLowValue = (totalPosts, currentPageHigh) => {
+  let currentPageLow = 0;
+
+  if (totalPosts < 1) {
+    currentPageLow = 0;
+  } else {
+    currentPageLow = totalPosts < 25 ? 1 : currentPageHigh - 24;
+  }
+
+  return currentPageLow;
+};
+
+const currentPageHighValue = (currentPageHigh, totalPosts) => {
+  currentPageHigh =
+    currentPageHigh <= totalPosts ? currentPageHigh : totalPosts;
+  return currentPageHigh;
+};
+
+// TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
 const removeEventHandler = (btnID) => {
-  // TODO: I highly doubt this is the way to go about it...revisit
   const oldBtn = document.querySelector(`#${btnID}`);
   const newBtn = oldBtn.cloneNode(true);
   oldBtn.parentNode.replaceChild(newBtn, oldBtn);
@@ -399,16 +416,17 @@ const btnPreviousOnClick = (
       : currentPageHigh - 25;
   document
     .querySelector("#btnPrevious")
-    .setAttribute("hasEventHandler", "true");
+    .setAttribute("hasEventHandler", "true"); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
   displayPostsFromFolder(folder, currentPageHigh);
 };
 
 const btnNextOnClick = (folder, currentPageHigh) => {
   currentPageHigh = currentPageHigh + 25;
-  document.querySelector("#btnNext").setAttribute("hasEventHandler", "true");
+  document.querySelector("#btnNext").setAttribute("hasEventHandler", "true"); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
   displayPostsFromFolder(folder, currentPageHigh);
 };
 
+// TODO: break up later
 const displayPost = (savedPost) => {
   const post = document.createElement("div");
   post.className = "post";
