@@ -299,7 +299,7 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
         )
       ); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
 
-  if (!isBtnPreviousDisabled() && !btnNextHasEventHandler())
+  if (!isBtnNextDisabled() && !btnNextHasEventHandler())
     document
       .querySelector("#btnNext")
       .addEventListener(
