@@ -426,24 +426,43 @@ const btnNextOnClick = (folder, currentPageHigh) => {
   displayPostsFromFolder(folder, currentPageHigh);
 };
 
-// TODO: break up later
 const displayPost = (savedPost) => {
+  const post = generatePost(savedPost);
+  const link = generateLinkForPost(savedPost);
+
+  appendPostToPage(post);
+  appendLinkToPost(post, link); // TODO: rewrite how you're adding the link to the post. it doesn't have to be in backwards order like this
+
+  appendHorizontalRuleToPostsSection();
+};
+
+const generatePost = (savedPost) => {
   const post = document.createElement("div");
   post.className = "post";
   post.id = savedPost.id;
-  document.querySelector("#posts").appendChild(post);
+  return post;
+};
 
+const generateLinkForPost = (savedPost) => {
   const link = document.createElement("a");
   link.href = savedPost.link;
-
   if (savedPost.id.substring(0, 3) === "t1_") {
     link.innerHTML = "(comment)";
   }
-
   link.innerHTML += savedPost.title;
   link.target = "_blank";
+  return link;
+};
 
+const appendPostToPage = (savedPost) => {
+  document.querySelector("#posts").appendChild(savedPost);
+};
+
+const appendLinkToPost = (post, link) => {
   document.querySelector(`#${post.id}`).appendChild(link);
+};
+
+const appendHorizontalRuleToPostsSection = () => {
   document.querySelector("#posts").innerHTML += "<hr>";
 };
 
