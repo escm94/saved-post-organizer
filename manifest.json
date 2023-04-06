@@ -1,21 +1,19 @@
-  {
-    "name": "Saved Post Organizer",
-    "description" : "Organize the saved posts from your Reddit account.",
-    "version": "0.0.0.4",
-    "manifest_version": 2,
-    "browser_action": {
-        "default_popup": "SavedPostOrganizer.html",
-        "default_icon": "images/icons8-checkmark-26.png"
-      },
-      "web_accessible_resources": [
-        "SavedPostOrganizer.js",
-        "SavedPostOrganizer.html"
-      ],
-      "permissions": [
-        "https://www.reddit.com/*"
-      ],
-      "background": {
-        "persistent": false,
-        "scripts": ["SavedPostOrganizer.js"]
-      }
+{
+  "name": "Saved Post Organizer for Reddit",
+  "description": "Organize the saved posts from your Reddit account.",
+  "version": "0.0.0.5",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_popup": "SavedPostOrganizer.html",
+    "default_icon": "images/icons8-checkmark-26.png"
+  },
+  "web_accessible_resources": [
+    "SavedPostOrganizer.js",
+    "SavedPostOrganizer.html"
+  ],
+  "permissions": ["https://www.reddit.com/*"],
+  "background": {
+    "persistent": false,
+    "scripts": ["SavedPostOrganizer.js"]
   }
+}

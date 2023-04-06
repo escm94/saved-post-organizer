@@ -19,8 +19,8 @@ window.onload = () => {
 };
 
 const enablePreviousAndNextButtons = () => {
-  document.querySelector("#btnPrevious").disabled = false;
-  document.querySelector("#btnNext").disabled = false;
+  document.querySelector('#btnPrevious').disabled = false;
+  document.querySelector('#btnNext').disabled = false;
 };
 
 const pageHighForInitialPage = (numPostsInFolder) => {
@@ -28,23 +28,26 @@ const pageHighForInitialPage = (numPostsInFolder) => {
 };
 
 const getAllFolder = () => {
-  return folders.find((folder) => folder.folderName === "All");
+  return (
+    folders.find((folder) => folder.folderName === 'All') ??
+    getReinitializedAllFolder()
+  );
 };
 
 const getFoldersFromLocalStorage = () => {
-  return JSON.parse(localStorage.getItem("folders")) ?? [];
+  return JSON.parse(localStorage.getItem('folders')) ?? [];
 };
 
 const getPostsFromLocalStorage = () => {
-  return JSON.parse(localStorage.getItem("posts")) ?? [];
+  return JSON.parse(localStorage.getItem('posts')) ?? [];
 };
 
 const getLastSyncedFromLocalStorage = () => {
-  return localStorage.getItem("lastSynced") ?? "";
+  return localStorage.getItem('lastSynced') ?? '';
 };
 
 const updateLastSyncedValue = (lastsyncedValue) => {
-  document.querySelector("#lastSyncedVal").innerHTML = lastsyncedValue;
+  document.querySelector('#lastSyncedVal').innerHTML = lastsyncedValue;
 };
 
 const handleSync = () => {
@@ -64,7 +67,7 @@ const clearDataForRefresh = () => {
 
 const getReinitializedAllFolder = () => {
   const allFolder = {
-    folderName: "All",
+    folderName: 'All',
     savedPosts: [],
   };
   return allFolder;
@@ -104,18 +107,18 @@ const fetchPosts = async (afterParamForURL) => {
 };
 
 const startSyncAnimation = () => {
-  document.querySelector("#btnSync").classList.add("spin");
+  document.querySelector('#btnSync').classList.add('spin');
 };
 
 const stopSyncAnimation = () => {
-  document.querySelector("#btnSync").classList.remove("spin");
+  document.querySelector('#btnSync').classList.remove('spin');
 };
 
 const generateURLStringForFetch = (afterParamForURL, postsPerRequest) => {
-  const baseURL = "https://www.reddit.com/saved.json";
+  const baseURL = 'https://www.reddit.com/saved.json';
   const limitURLParam = `?limit=${postsPerRequest}`;
   const afterURLParam = `${
-    afterParamForURL ? "&after=" + afterParamForURL : ""
+    afterParamForURL ? '&after=' + afterParamForURL : ''
   }`;
   const wholeURL = `${baseURL}${limitURLParam}${afterURLParam}`;
 
@@ -129,11 +132,11 @@ const processResponses = (responseJSON) => {
 
 const updateLocalStorageData = () => {
   const tempDate = new Date(Date.now());
-  const lastSyncedDate = tempDate.toString().split(" GMT")[0];
+  const lastSyncedDate = tempDate.toString().split(' GMT')[0];
 
-  localStorage.setItem("lastSynced", lastSyncedDate);
-  localStorage.setItem("folders", JSON.stringify(folders));
-  localStorage.setItem("posts", JSON.stringify(posts));
+  localStorage.setItem('lastSynced', lastSyncedDate);
+  localStorage.setItem('folders', JSON.stringify(folders));
+  localStorage.setItem('posts', JSON.stringify(posts));
 };
 
 const addAllPostsToAllFolder = () => {
@@ -142,16 +145,16 @@ const addAllPostsToAllFolder = () => {
 };
 
 const hideDefaultTextInFooter = () => {
-  document.querySelector("#lblLastSynced").classList.add("hide");
-  document.querySelector("#lastSyncedVal").classList.add("hide");
+  document.querySelector('#lblLastSynced').classList.add('hide');
+  document.querySelector('#lastSyncedVal').classList.add('hide');
 };
 
 const displayLoginMessage = () => {
-  const lblLogin = document.querySelector("#lblLogin");
-  lblLogin.classList.remove("hide");
+  const lblLogin = document.querySelector('#lblLogin');
+  lblLogin.classList.remove('hide');
   lblLogin.innerHTML =
     "Unable to fetch posts while signed out. <a href='https://reddit.com/login' target='_blank'>Sign in.</a>";
-  lblLogin.classList.add("show");
+  lblLogin.classList.add('show');
 };
 
 const processPost = (savedItem) => {
@@ -170,7 +173,7 @@ const processPost = (savedItem) => {
   };
 
   if (savedItemIsAComment(savedItem)) {
-    savedPost.link = "https://reddit.com" + savedItem.data.permalink;
+    savedPost.link = 'https://reddit.com' + savedItem.data.permalink;
     savedPost.title = savedItem.data.link_title;
   } else {
     savedPost.link = savedItem.data.url;
@@ -192,7 +195,7 @@ const subredditFolderExists = (savedItemSubredditName) => {
 };
 
 const savedItemIsAComment = (savedItem) => {
-  return savedItem.data.name.substring(0, 3) === "t1_";
+  return savedItem.data.name.substring(0, 3) === 't1_';
 };
 
 const addSavedPostToFolderArray = (folderName, savedPost) => {
@@ -228,7 +231,7 @@ const refreshFoldersArea = () => {
 };
 
 const clearFoldersArea = () => {
-  document.querySelector("#folders").innerHTML = "";
+  document.querySelector('#folders').innerHTML = '';
 };
 
 const populateFoldersArea = () => {
@@ -236,15 +239,15 @@ const populateFoldersArea = () => {
 };
 
 const resetFoldersScrollTop = () => {
-  document.querySelector("#folders").scrollTop = 0;
+  document.querySelector('#folders').scrollTop = 0;
 };
 
 const generateFolderButton = (folder) => {
   const numPostsInFolder = folder?.savedPosts?.length;
   const pageHigh = pageHighForInitialPage(numPostsInFolder);
 
-  const btnFolder = document.createElement("div");
-  btnFolder.className = "folder";
+  const btnFolder = document.createElement('div');
+  btnFolder.className = 'folder';
   btnFolder.id = folder.folderName;
   btnFolder.innerHTML = `${folder.folderName}(${numPostsInFolder})`;
   addEventListenerFolderButton(btnFolder, folder, pageHigh);
@@ -252,7 +255,7 @@ const generateFolderButton = (folder) => {
 };
 
 const addEventListenerFolderButton = (btnFolder, folder, pageHigh) => {
-  btnFolder.addEventListener("click", function () {
+  btnFolder.addEventListener('click', function () {
     enablePreviousAndNextButtons();
     configurePreviousAndNextButtons();
     displayPostsFromFolder(folder, pageHigh);
@@ -260,7 +263,7 @@ const addEventListenerFolderButton = (btnFolder, folder, pageHigh) => {
 };
 
 const addFolderButtonToPage = (btnFolder) => {
-  document.querySelector("#folders").appendChild(btnFolder);
+  document.querySelector('#folders').appendChild(btnFolder);
 };
 
 // TODO: continue breaking up later
@@ -287,9 +290,9 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
 
   if (!isBtnPreviousDisabled() && !btnPreviousHasEventHandler())
     document
-      .querySelector("#btnPrevious")
+      .querySelector('#btnPrevious')
       .addEventListener(
-        "click",
+        'click',
         btnPreviousOnClick.bind(
           null,
           folder,
@@ -301,81 +304,81 @@ const displayPostsFromFolder = (folder, currentPageHigh) => {
 
   if (!isBtnNextDisabled() && !btnNextHasEventHandler())
     document
-      .querySelector("#btnNext")
+      .querySelector('#btnNext')
       .addEventListener(
-        "click",
+        'click',
         btnNextOnClick.bind(null, folder, currentPageHigh)
       ); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
 };
 
 const resetPostsScrollTop = () => {
-  document.querySelector("#posts").scrollTop = 0;
+  document.querySelector('#posts').scrollTop = 0;
 };
 
 const clearPostsArea = () => {
-  document.querySelector("#posts").innerHTML = "";
+  document.querySelector('#posts').innerHTML = '';
 };
 
 const populateLblFolderName = (folderName) => {
-  const lblFolderName = document.querySelector("#lblFolderName");
+  const lblFolderName = document.querySelector('#lblFolderName');
   lblFolderName.innerHTML = folderName;
   displayLblFolderName();
 };
 
 const displayLblFolderName = () => {
-  const lblFolderName = document.querySelector("#lblFolderName");
-  lblFolderName.className = "show";
+  const lblFolderName = document.querySelector('#lblFolderName');
+  lblFolderName.className = 'show';
 };
 
 const populateLblPages = (currentPageLow, currentPageHigh, totalPosts) => {
   document.querySelector(
-    "#lblPages"
+    '#lblPages'
   ).innerHTML = `${currentPageLow}-${currentPageHigh} of ${totalPosts}`;
 };
 
 const setBtnPreviousDisabled = (currentPageLow) => {
-  document.querySelector("#btnPrevious").disabled =
+  document.querySelector('#btnPrevious').disabled =
     currentPageLow > 1 ? false : true;
 };
 
 const setBtnNextDisabled = (currentPageHigh, totalPosts) => {
-  document.querySelector("#btnNext").disabled =
+  document.querySelector('#btnNext').disabled =
     currentPageHigh < totalPosts ? false : true;
 };
 
 const configurePreviousAndNextButtons = () => {
-  const oldPrevDisabled = document.querySelector("#btnPrevious").disabled;
-  const oldNextDisabled = document.querySelector("#btnNext").disabled;
+  const oldPrevDisabled = document.querySelector('#btnPrevious').disabled;
+  const oldNextDisabled = document.querySelector('#btnNext').disabled;
 
-  const btnPrevious = document.querySelector("#btnPrevious");
+  const btnPrevious = document.querySelector('#btnPrevious');
   btnPrevious.disabled = false;
 
-  const btnNext = document.querySelector("#btnNext");
+  const btnNext = document.querySelector('#btnNext');
   btnNext.disabled = false;
 
-  if (btnPrevious.getAttribute("hasEventHandler"))
-    removeEventHandler("btnPrevious");
+  if (btnPrevious.getAttribute('hasEventHandler'))
+    removeEventHandler('btnPrevious');
 
-  if (btnNext.getAttribute("hasEventHandler")) removeEventHandler("btnNext");
+  if (btnNext.getAttribute('hasEventHandler')) removeEventHandler('btnNext');
 
-  document.querySelector("#btnPrevious").disabled = oldPrevDisabled;
-  document.querySelector("#btnNext").disabled = oldNextDisabled;
+  document.querySelector('#btnPrevious').disabled = oldPrevDisabled;
+  document.querySelector('#btnNext').disabled = oldNextDisabled;
 };
 
 const isBtnPreviousDisabled = () => {
-  return document.querySelector("#btnPrevious").disabled;
+  return document.querySelector('#btnPrevious').disabled;
 };
 
 const isBtnNextDisabled = () => {
-  return document.querySelector("#btnNext").disabled;
+  return document.querySelector('#btnNext').disabled;
 };
 
 const btnPreviousHasEventHandler = () => {
-  return document.querySelector("#btnPrevious").getAttribute("hasEventHandler");
+  return document.querySelector('#btnPrevious').getAttribute('hasEventHandler');
 };
 
 const btnNextHasEventHandler = () => {
-  return document.querySelector("#btnNext").getAttribute("hasEventHandler");
+  return document.querySelector('#btnNext').getAttribute('hasEventHandler');
 };
 
 const currentPageLowValue = (totalPosts, currentPageHigh) => {
@@ -401,7 +404,7 @@ const removeEventHandler = (btnID) => {
   const oldBtn = document.querySelector(`#${btnID}`);
   const newBtn = oldBtn.cloneNode(true);
   oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-  document.querySelector(`#${btnID}`).removeAttribute("hasEventHandler");
+  document.querySelector(`#${btnID}`).removeAttribute('hasEventHandler');
 };
 
 const btnPreviousOnClick = (
@@ -415,14 +418,14 @@ const btnPreviousOnClick = (
       ? currentPageLow - 1
       : currentPageHigh - 25;
   document
-    .querySelector("#btnPrevious")
-    .setAttribute("hasEventHandler", "true"); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
+    .querySelector('#btnPrevious')
+    .setAttribute('hasEventHandler', 'true'); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
   displayPostsFromFolder(folder, currentPageHigh);
 };
 
 const btnNextOnClick = (folder, currentPageHigh) => {
   currentPageHigh = currentPageHigh + 25;
-  document.querySelector("#btnNext").setAttribute("hasEventHandler", "true"); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
+  document.querySelector('#btnNext').setAttribute('hasEventHandler', 'true'); // TODO: rewrite how we are registering/removing these events. this approach is wrong and unnecessary
   displayPostsFromFolder(folder, currentPageHigh);
 };
 
@@ -437,25 +440,25 @@ const displayPost = (savedPost) => {
 };
 
 const generatePost = (savedPost) => {
-  const post = document.createElement("div");
-  post.className = "post";
+  const post = document.createElement('div');
+  post.className = 'post';
   post.id = savedPost.id;
   return post;
 };
 
 const generateLinkForPost = (savedPost) => {
-  const link = document.createElement("a");
+  const link = document.createElement('a');
   link.href = savedPost.link;
-  if (savedPost.id.substring(0, 3) === "t1_") {
-    link.innerHTML = "(comment)";
+  if (savedPost.id.substring(0, 3) === 't1_') {
+    link.innerHTML = '(comment)';
   }
   link.innerHTML += savedPost.title;
-  link.target = "_blank";
+  link.target = '_blank';
   return link;
 };
 
 const appendPostToPage = (savedPost) => {
-  document.querySelector("#posts").appendChild(savedPost);
+  document.querySelector('#posts').appendChild(savedPost);
 };
 
 const appendLinkToPost = (post, link) => {
@@ -463,7 +466,7 @@ const appendLinkToPost = (post, link) => {
 };
 
 const appendHorizontalRuleToPostsSection = () => {
-  document.querySelector("#posts").innerHTML += "<hr>";
+  document.querySelector('#posts').innerHTML += '<hr>';
 };
 
-document.querySelector("#btnSync").addEventListener("click", handleSync);
+document.querySelector('#btnSync').addEventListener('click', handleSync);
